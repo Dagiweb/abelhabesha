@@ -1,0 +1,6 @@
+{
+  "name": "Abel Habesha - አቤል ሓበሻ አልባሳት",
+  "description": "የተለያዩ የሰርግ፣ የመልስ፣ የጥንዶች፣ የአሸንዳ እና የባህል ሓበሻ ቀሚሶችና ሽፎኖች መሸጫ መደብር - Abel Habesha Traditional Attire",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

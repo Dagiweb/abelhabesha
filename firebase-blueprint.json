@@ -1,0 +1,38 @@
+{
+  "entities": {
+    "Product": {
+      "title": "Product",
+      "description": "Traditional Habesha attires and fabrics available in the store",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "code": { "type": "string" },
+        "nameAm": { "type": "string" },
+        "nameEn": { "type": "string" },
+        "nameTi": { "type": "string" },
+        "categoryGroup": { "type": "string", "enum": ["events", "men_couples", "heritage_fabrics"] },
+        "hashtags": { "type": "array", "items": { "type": "string" } },
+        "fabricAm": { "type": "string" },
+        "fabricEn": { "type": "string" },
+        "fabricTi": { "type": "string" },
+        "priceETB": { "type": "number" },
+        "originalPriceETB": { "type": "number" },
+        "image": { "type": "string" },
+        "descriptionAm": { "type": "string" },
+        "descriptionEn": { "type": "string" },
+        "descriptionTi": { "type": "string" },
+        "inStock": { "type": "boolean" },
+        "tailoringDays": { "type": "number" },
+        "featured": { "type": "boolean" },
+        "bestSeller": { "type": "boolean" }
+      },
+      "required": ["id", "code", "nameAm", "nameEn", "priceETB", "image"]
+    }
+  },
+  "firestore": {
+    "/products/{productId}": {
+      "entity": "Product",
+      "description": "Collection of all attire products"
+    }
+  }
+}

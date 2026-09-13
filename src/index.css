@@ -1,0 +1,60 @@
+@import "tailwindcss";
+
+@layer base {
+  body {
+    font-family: 'Noto Sans Ethiopic', 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  }
+
+  .font-serif {
+    font-family: 'Playfair Display', 'Cinzel', serif;
+  }
+
+  .font-cinzel {
+    font-family: 'Cinzel', serif;
+  }
+
+  .font-ethiopic {
+    font-family: 'Noto Sans Ethiopic', sans-serif;
+  }
+}
+
+/* Custom scrollbar for vibrant palette */
+::-webkit-scrollbar {
+  width: 7px;
+  height: 7px;
+}
+::-webkit-scrollbar-track {
+  background: #F9F4EC;
+}
+::-webkit-scrollbar-thumb {
+  background: #C5A059;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #8B0000;
+}
+
+/* Hide scrollbar for clean horizontal rails on mobile */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Traditional Ethiopian Tibeb pattern divider with Vibrant Palette colors */
+.tibeb-border {
+  background: repeating-linear-gradient(
+    90deg,
+    #8B0000 0px,
+    #8B0000 16px,
+    #C5A059 16px,
+    #C5A059 32px,
+    #2E4739 32px,
+    #2E4739 48px,
+    #2D241E 48px,
+    #2D241E 64px
+  );
+  height: 4px;
+}
