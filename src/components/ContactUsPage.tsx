@@ -16,6 +16,7 @@ import {
   Copy,
   ExternalLink
 } from 'lucide-react';
+import { AbelHabeshaLogo } from './AbelHabeshaLogo';
 
 interface ContactUsPageProps {
   language: Language;
@@ -131,6 +132,14 @@ export const ContactUsPage: React.FC<ContactUsPageProps> = ({
           
           {/* Left Column: Direct Info & Showroom Cards */}
           <div className="lg:col-span-5 space-y-6">
+
+            {/* Official Brand Identity Card */}
+            <div className="bg-white p-6 rounded-2xl border-2 border-[#EAD8C0] shadow-sm flex flex-col items-center text-center relative overflow-hidden">
+              <div className="inline-flex items-center gap-1.5 px-3 py-0.5 bg-[#F9F4EC] border border-[#EAD8C0] rounded-full text-[10px] font-bold text-[#8B0000] mb-3">
+                <span>{isTi ? 'ወግዓዊ አርማ' : isAm ? 'ኦፊሴላዊ አርማ' : 'Official Brand'}</span>
+              </div>
+              <AbelHabeshaLogo layout="stacked" variant="dual" size="lg" showPhone={true} />
+            </div>
             
             {/* Showroom Location Card */}
             <div className="bg-white p-6 rounded-2xl border border-[#EAD8C0] shadow-xs">

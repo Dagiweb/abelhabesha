@@ -1,6 +1,6 @@
 export type Language = 'am' | 'en' | 'ti';
 
-export type ViewType = 'home' | 'products' | 'detail' | 'about' | 'contact' | 'admin' | 'catalog';
+export type ViewType = 'home' | 'products' | 'detail' | 'about' | 'contact' | 'admin' | 'catalog' | 'blogs';
 
 export type CategoryGroupId = 'all' | 'events' | 'men_couples' | 'heritage_fabrics';
 

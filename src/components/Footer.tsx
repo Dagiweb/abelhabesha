@@ -1,43 +1,65 @@
 import React from 'react';
 import { STORE_INFO } from '../data/categories';
 import { getTranslation } from '../data/translations';
-import { Language } from '../types';
+import { Language, ViewType } from '../types';
 import { 
   Phone, 
   MapPin, 
-  Globe, 
   Send, 
   MessageCircle, 
-  Video,
   Instagram,
   Facebook,
   Youtube,
   Sparkles,
-  Mail
+  Mail,
+  FileText,
+  Ruler
 } from 'lucide-react';
+import { AbelHabeshaLogo } from './AbelHabeshaLogo';
+
+// Accurate official TikTok vector icon
+const TikTokIcon: React.FC<{ className?: string }> = ({ className = "w-4 h-4" }) => (
+  <svg viewBox="0 0 24 24" fill="currentColor" className={className}>
+    <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64c.298-.002.595.042.88.13V9.4a6.33 6.33 0 0 0-1-.08A6.34 6.34 0 0 0 3 15.66a6.34 6.34 0 0 0 10.82 4.49 6.27 6.27 0 0 0 1.86-4.49V8.58a8.28 8.28 0 0 0 4.82 1.54V6.69h-.91z" />
+  </svg>
+);
 
 interface FooterProps {
   language: Language;
   onSelectHashtag: (tag: string) => void;
-  onNavigate?: (view: 'home' | 'products' | 'about' | 'contact' | 'admin') => void;
+  onNavigate?: (view: ViewType) => void;
+  onOpenReturnPolicy?: () => void;
+  onOpenMeasurementGuide?: () => void;
 }
 
-export const Footer: React.FC<FooterProps> = ({ language, onSelectHashtag, onNavigate }) => {
+export const Footer: React.FC<FooterProps> = ({ 
+  language, 
+  onSelectHashtag, 
+  onNavigate,
+  onOpenReturnPolicy,
+  onOpenMeasurementGuide
+}) => {
   const t = getTranslation(language);
   const currentAddress = language === 'ti' ? STORE_INFO.addressTi : (language === 'am' ? STORE_INFO.addressAm : STORE_INFO.addressEn);
 
   const socialLinks = [
     {
+      name: 'TikTok',
+      url: STORE_INFO.socialLinks.tiktok,
+      icon: TikTokIcon,
+      color: 'hover:bg-[#000000] hover:text-[#00f2fe]',
+    },
+    {
+      name: 'Telegram Channel',
+      url: STORE_INFO.telegramChannel,
+      icon: Send,
+      color: 'hover:bg-[#29b6f6]',
+    },
+    {
       name: 'WhatsApp',
       url: STORE_INFO.whatsappUrl,
       icon: MessageCircle,
       color: 'hover:bg-[#25D366]',
-    },
-    {
-      name: 'Telegram',
-      url: STORE_INFO.telegramUrl,
-      icon: Send,
-      color: 'hover:bg-[#29b6f6]',
     },
     {
       name: 'Instagram',
@@ -50,12 +72,6 @@ export const Footer: React.FC<FooterProps> = ({ language, onSelectHashtag, onNav
       url: STORE_INFO.socialLinks.facebook,
       icon: Facebook,
       color: 'hover:bg-[#1877F2]',
-    },
-    {
-      name: 'TikTok',
-      url: STORE_INFO.socialLinks.tiktok,
-      icon: Video,
-      color: 'hover:bg-[#000000]',
     },
     {
       name: 'YouTube',
@@ -76,10 +92,11 @@ export const Footer: React.FC<FooterProps> = ({ language, onSelectHashtag, onNav
     { tag: '#የመልስ', nameTi: 'ናይ መልሲ', nameAm: 'የመልስ አልባሳት', nameEn: 'Meles' },
     { tag: '#የካፕል', nameTi: 'ናይ ጥንዲ (ካፕል)', nameAm: 'የጥንዶች (Couple)', nameEn: 'Couples' },
     { tag: '#የወንድ', nameTi: 'ናይ ደቂ-ተባዕትዮ', nameAm: 'የወንዶች ባህላዊ', nameEn: "Men's" },
-    { tag: '#የኣክሱም_ፈትል', nameTi: 'ናይ ኣክሱም ፈትሊ', nameAm: 'የኣክሱም ፈትል', nameEn: 'Axum Fetil' },
+    { tag: '#የኣክሱም_ፈትል', nameTi: 'ናይ ኣክሱም ፈትሊ', nameAm: 'የኣክሱም ፈትልና ማግ', nameEn: 'Axum Fetil' },
     { tag: '#የራያ_ልብስ', nameTi: 'ናይ ራያ ባህሊ', nameAm: 'የራያ ባህል', nameEn: 'Raya' },
     { tag: '#የሳባጨርቅ_ልብስ', nameTi: 'ናይ ሳባ ጨርቂ', nameAm: 'የሳባ ጨርቅ', nameEn: 'Saba Fabric' },
-    { tag: '#የቻይናጨርቅ_ልብስ', nameTi: 'ናይ ቻይና ጨርቂ/ሺፎን', nameAm: 'የቻይና ጨርቅ/ሽፎን', nameEn: 'Chiffon' },
+    { tag: '#የሽፎን_ቀሚስ', nameTi: 'ናይ ሺፎን ክዳን', nameAm: 'የሽፎን ቀሚስ (Chiffon)', nameEn: 'Chiffon' },
+    { tag: '#የቻይናጨርቅ_ልብስ', nameTi: 'ናይ ቻይና ጨርቂ', nameAm: 'የቻይና ጨርቅ', nameEn: 'China Fabric' },
     { tag: '#የኣሸንዳ', nameTi: 'ናይ ኣሸንዳ ክዳን', nameAm: 'የአሸንዳ ልብስ', nameEn: 'Ashenda' },
     { tag: '#የቡና', nameTi: 'ናይ ቡን ስርዓት', nameAm: 'የቡና ሥነ-ሥርዓት', nameEn: 'Coffee Set' },
   ];
@@ -94,19 +111,7 @@ export const Footer: React.FC<FooterProps> = ({ language, onSelectHashtag, onNav
           {/* Brand & Mission */}
           <div className="lg:col-span-4 space-y-4">
             <div className="flex items-center gap-3">
-              <div className="w-11 h-11 rounded-full bg-gradient-to-br from-[#8B0000] to-[#C5A059] p-0.5">
-                <div className="w-full h-full rounded-full bg-[#2D241E] flex items-center justify-center text-white font-serif font-bold text-xl">
-                  AH
-                </div>
-              </div>
-              <div>
-                <h3 className="text-xl font-bold font-serif tracking-tight text-white">
-                  ABEL HABESHA
-                </h3>
-                <p className="text-xs text-[#C5A059] font-bold tracking-widest uppercase">
-                  {language === 'ti' ? 'ኣቤል ሓበሻ ባህላዊ ክዳውንቲ & ሺፎናት' : 'አቤል ሓበሻ አልባሳት & ሽፎኖች'}
-                </p>
-              </div>
+              <AbelHabeshaLogo variant="gold" size="lg" showPhone={true} />
             </div>
 
             <p className="text-xs sm:text-sm text-[#FDFCF8]/80 leading-relaxed font-light">
@@ -117,23 +122,24 @@ export const Footer: React.FC<FooterProps> = ({ language, onSelectHashtag, onNav
                 : 'Finest handcrafted Ethiopian traditional gowns and lightweight modern chiffon dresses. Crafted with authentic Axum fetel and Saba fabric in Shiromeda.'}
             </p>
 
-            <div className="p-3 bg-white/5 border border-white/10 rounded-2xl">
+            <div className="p-3.5 bg-white/5 border border-white/10 rounded-2xl space-y-2">
               <p className="text-xs font-bold text-[#C5A059] flex items-center gap-1.5">
-                <Sparkles className="w-3.5 h-3.5 text-[#C5A059]" />
+                <Sparkles className="w-4 h-4 text-[#C5A059] shrink-0" />
                 <span>
-                  {language === 'ti' 
-                    ? '👉 ብብዝሒ ንዘስርሑ ዓቢ ቅናሽ ንገብር ኢና!' 
-                    : language === 'am' 
-                    ? '👉 በብዛት ለሚያሰሩ ታላቅ ቅናሽ እናደርጋለን!' 
-                    : '👉 Special discounts for bulk and wedding party orders!'}
+                  {language === 'am' ? '👉 በብዛት ለሚያሰሩ ታላቅ ቅናሽ!' : '👉 Special discounts for bulk orders!'}
                 </span>
+              </p>
+              <p className="text-[11px] text-[#FDFCF8]/80 leading-normal">
+                {language === 'am'
+                  ? 'ለሰርግ ሚዜዎች፦ ለቡድን እና ለቤተሰብ አልባሳት ታላቅ ቅናሽ እናደርጋለን።'
+                  : 'Bridal parties: Great bulk savings for groups and families.'}
               </p>
             </div>
           </div>
 
           {/* Quick Category Catalog Links */}
-          <div className="lg:col-span-4">
-            <h4 className="text-xs font-bold tracking-widest uppercase text-white/70 mb-4">
+          <div className="lg:col-span-4 space-y-4">
+            <h4 className="text-xs font-bold tracking-widest uppercase text-white/70 mb-2">
               {t.popularCategoriesFooter}
             </h4>
             <div className="flex flex-wrap gap-2">
@@ -151,12 +157,36 @@ export const Footer: React.FC<FooterProps> = ({ language, onSelectHashtag, onNav
                         window.scrollTo({ top: 400, behavior: 'smooth' });
                       }
                     }}
-                    className="px-3 py-1.5 rounded-lg bg-white/5 hover:bg-[#8B0000] hover:text-white border border-white/10 text-xs text-[#FDFCF8]/90 transition-colors"
+                    className="px-3 py-1.5 rounded-lg bg-white/5 hover:bg-[#8B0000] hover:text-white border border-white/10 text-xs text-[#FDFCF8]/90 transition-colors cursor-pointer"
                   >
                     {label}
                   </button>
                 );
               })}
+            </div>
+
+            {/* Guides & Customer Policy Buttons */}
+            <div className="pt-2 flex flex-col gap-2">
+              {onOpenMeasurementGuide && (
+                <button
+                  type="button"
+                  onClick={onOpenMeasurementGuide}
+                  className="flex items-center gap-2 text-xs font-bold text-[#C5A059] hover:text-white transition-colors text-left cursor-pointer"
+                >
+                  <Ruler className="w-3.5 h-3.5" />
+                  <span>{language === 'am' ? 'የልኬት አወሳሰድ መመሪያ (Measurement Guide)' : 'Measurement Guide'}</span>
+                </button>
+              )}
+              {onOpenReturnPolicy && (
+                <button
+                  type="button"
+                  onClick={onOpenReturnPolicy}
+                  className="flex items-center gap-2 text-xs font-bold text-[#C5A059] hover:text-white transition-colors text-left cursor-pointer"
+                >
+                  <FileText className="w-3.5 h-3.5" />
+                  <span>{language === 'am' ? 'የመመለሻ እና የትዕዛዝ ደንብ (Return Policy)' : 'Return & Order Policy'}</span>
+                </button>
+              )}
             </div>
           </div>
 
@@ -186,14 +216,14 @@ export const Footer: React.FC<FooterProps> = ({ language, onSelectHashtag, onNav
             </div>
 
             <div className="flex items-center gap-2.5 text-xs text-[#FDFCF8]/90">
-              <Globe className="w-4 h-4 text-[#C5A059] shrink-0" />
+              <Send className="w-4 h-4 text-[#29b6f6] shrink-0" />
               <a 
-                href={STORE_INFO.website} 
+                href={STORE_INFO.telegramChannel} 
                 target="_blank" 
                 rel="noreferrer"
-                className="hover:text-[#C5A059] transition-colors"
+                className="hover:text-[#29b6f6] transition-colors"
               >
-                abelhabesha.com.et
+                Telegram Channel: @{STORE_INFO.telegramChannelUser}
               </a>
             </div>
 
@@ -207,10 +237,10 @@ export const Footer: React.FC<FooterProps> = ({ language, onSelectHashtag, onNav
               </a>
             </div>
 
-            {/* Social Media Link Buttons */}
+            {/* Social Media Link Buttons with Authentic Icons */}
             <div className="pt-2">
               <p className="text-[10px] opacity-60 uppercase tracking-widest mb-2">
-                {t.socialFollow}
+                {t.socialFollow} (TikTok • Telegram • WhatsApp • Instagram • Facebook)
               </p>
               <div className="flex flex-wrap gap-2.5">
                 {socialLinks.map((s) => {
@@ -221,7 +251,7 @@ export const Footer: React.FC<FooterProps> = ({ language, onSelectHashtag, onNav
                       href={s.url}
                       target="_blank"
                       rel="noreferrer"
-                      className="w-10 h-10 rounded-full border border-white/20 flex items-center justify-center opacity-80 hover:opacity-100 hover:border-[#8B0000] hover:bg-[#8B0000] text-white transition-all shadow-xs"
+                      className={`w-10 h-10 rounded-full border border-white/20 flex items-center justify-center opacity-85 hover:opacity-100 text-white transition-all shadow-xs ${s.color}`}
                       title={s.name}
                     >
                       <Icon className="w-4 h-4" />
@@ -242,7 +272,7 @@ export const Footer: React.FC<FooterProps> = ({ language, onSelectHashtag, onNav
                 if (onNavigate) onNavigate('home');
                 window.scrollTo({ top: 0, behavior: 'smooth' });
               }}
-              className="hover:text-[#C5A059] transition-colors"
+              className="hover:text-[#C5A059] transition-colors cursor-pointer"
             >
               {t.navHome}
             </button>
@@ -252,9 +282,19 @@ export const Footer: React.FC<FooterProps> = ({ language, onSelectHashtag, onNav
                 if (onNavigate) onNavigate('products');
                 window.scrollTo({ top: 0, behavior: 'smooth' });
               }}
-              className="hover:text-[#C5A059] transition-colors"
+              className="hover:text-[#C5A059] transition-colors cursor-pointer"
             >
               {t.navProducts}
+            </button>
+            <span className="text-white/20">•</span>
+            <button
+              onClick={() => {
+                if (onNavigate) onNavigate('blogs');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              }}
+              className="hover:text-[#C5A059] transition-colors cursor-pointer"
+            >
+              {t.navBlogs}
             </button>
             <span className="text-white/20">•</span>
             <button
@@ -262,7 +302,7 @@ export const Footer: React.FC<FooterProps> = ({ language, onSelectHashtag, onNav
                 if (onNavigate) onNavigate('about');
                 window.scrollTo({ top: 0, behavior: 'smooth' });
               }}
-              className="hover:text-[#C5A059] transition-colors"
+              className="hover:text-[#C5A059] transition-colors cursor-pointer"
             >
               {t.navAbout}
             </button>
@@ -272,7 +312,7 @@ export const Footer: React.FC<FooterProps> = ({ language, onSelectHashtag, onNav
                 if (onNavigate) onNavigate('contact');
                 window.scrollTo({ top: 0, behavior: 'smooth' });
               }}
-              className="hover:text-[#C5A059] transition-colors"
+              className="hover:text-[#C5A059] transition-colors cursor-pointer"
             >
               {t.navContact}
             </button>
@@ -283,15 +323,14 @@ export const Footer: React.FC<FooterProps> = ({ language, onSelectHashtag, onNav
           </div>
         </div>
 
-        {/* Bottom copyright & appreciation */}
+        {/* Bottom copyright & slogan */}
         <div className="pt-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-[#FDFCF8]/60">
           <p>
             © {new Date().getFullYear()} Abel Habesha ({language === 'ti' ? 'ኣቤል ሓበሻ ባህላዊ ክዳውንቲ' : 'አቤል ሓበሻ አልባሳት'}). {t.allRightsReserved}
           </p>
 
-          <p className="flex items-center gap-1.5 font-medium text-[#FDFCF8]">
-            <span>{t.thankYouFooter}</span>
-            <span className="text-[#C5A059]">💛</span>
+          <p className="flex items-center gap-1.5 font-medium text-[#C5A059]">
+            <span>Abel Habesha — የጥበብ ጥራት፣ የባህል ኩራት!</span>
           </p>
         </div>
 

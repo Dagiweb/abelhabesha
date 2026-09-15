@@ -6,14 +6,17 @@ import {
   Search, 
   Globe, 
   MapPin, 
-  MessageCircle,
-  Menu,
-  X,
-  Sparkles
+  MessageCircle, 
+  Menu, 
+  X, 
+  Sparkles,
+  Ruler,
+  BookOpen
 } from 'lucide-react';
 import { STORE_INFO } from '../data/categories';
 import { getTranslation } from '../data/translations';
-import { Language } from '../types';
+import { Language, ViewType } from '../types';
+import { AbelHabeshaLogo } from './AbelHabeshaLogo';
 
 interface NavbarProps {
   language: Language;
@@ -26,8 +29,9 @@ interface NavbarProps {
   onSearchChange: (query: string) => void;
   onOpenCustomOrder: () => void;
   onLogoClick?: () => void;
-  currentView?: 'home' | 'products' | 'catalog' | 'detail' | 'about' | 'contact' | 'admin';
-  onNavigate?: (view: 'home' | 'products' | 'about' | 'contact' | 'admin') => void;
+  currentView?: ViewType;
+  onNavigate?: (view: ViewType) => void;
+  onOpenMeasurementGuide?: () => void;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
@@ -43,6 +47,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   onLogoClick,
   currentView = 'home',
   onNavigate,
+  onOpenMeasurementGuide,
 }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const t = getTranslation(language);
@@ -95,11 +100,12 @@ export const Navbar: React.FC<NavbarProps> = ({
         </div>
       </div>
 
-      {/* Main Navbar - Compact & Responsive */}
+      {/* Main Navbar - Clean 2-Row Design on Desktop for Maximum Space */}
       <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-2 sm:py-2.5">
+        {/* Row 1: Logo, Spacious Search Bar, and Actions */}
         <div className="flex items-center justify-between gap-2 sm:gap-4">
           {/* Logo & Brand */}
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 shrink-0">
             <a 
               href="#" 
               onClick={(e) => {
@@ -108,89 +114,27 @@ export const Navbar: React.FC<NavbarProps> = ({
                   onLogoClick();
                 }
               }}
-              className="flex items-center gap-2 group"
+              className="flex items-center gap-2 group cursor-pointer"
             >
-              <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-linear-to-br from-[#8B0000] to-[#C5A059] p-0.5 shadow-xs shrink-0">
-                <div className="w-full h-full rounded-full bg-[#FDFCF8] flex items-center justify-center text-[#8B0000] font-bold text-sm sm:text-base font-serif">
-                  AH
-                </div>
-              </div>
-              <div className="flex flex-col">
-                <div className="flex items-center gap-1.5">
-                  <span className="text-base sm:text-lg font-serif font-bold tracking-tight text-[#8B0000] leading-none">
-                    ABEL HABESHA
-                  </span>
-                  <span className="text-[9px] sm:text-[10px] px-1.5 py-0.2 bg-[#F9F4EC] text-[#8B0000] border border-[#EAD8C0] rounded font-semibold font-ethiopic leading-normal">
-                    {language === 'ti' ? 'ኣቤል ሓበሻ' : 'አቤል ሓበሻ'}
-                  </span>
-                </div>
-                <span className="hidden lg:block text-[9px] tracking-wider uppercase opacity-70 text-[#2D241E] mt-0.5">
-                  {language === 'ti' ? 'ባህላዊ ክዳውንቲ • ሽሮሜዳ' : language === 'am' ? 'የሓበሻ ቀሚሶችና ሽፎኖች መደብር • ሽሮሜዳ' : 'Authentic Ethiopian Elegance • Shiromeda'}
-                </span>
-              </div>
+              <AbelHabeshaLogo variant="dual" size="md" showPhone={false} />
             </a>
           </div>
 
-          {/* Desktop Navigation Links */}
-          <nav className="hidden lg:flex items-center gap-1 xl:gap-2 text-xs font-semibold text-[#2D241E] shrink-0">
-            <button
-              onClick={() => onNavigate && onNavigate('home')}
-              className={`px-3 py-1.5 rounded-lg transition-colors ${
-                currentView === 'home'
-                  ? 'bg-[#8B0000] text-white font-bold shadow-2xs'
-                  : 'hover:bg-[#F9F4EC] hover:text-[#8B0000]'
-              }`}
-            >
-              {t.navHome}
-            </button>
-            <button
-              onClick={() => onNavigate && onNavigate('products')}
-              className={`px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1 ${
-                currentView === 'products' || currentView === 'catalog'
-                  ? 'bg-[#8B0000] text-white font-bold shadow-2xs'
-                  : 'hover:bg-[#F9F4EC] hover:text-[#8B0000]'
-              }`}
-            >
-              <ShoppingBag className="w-3.5 h-3.5" />
-              <span>{t.navProducts}</span>
-            </button>
-            <button
-              onClick={() => onNavigate && onNavigate('about')}
-              className={`px-3 py-1.5 rounded-lg transition-colors ${
-                currentView === 'about'
-                  ? 'bg-[#8B0000] text-white font-bold shadow-2xs'
-                  : 'hover:bg-[#F9F4EC] hover:text-[#8B0000]'
-              }`}
-            >
-              {t.navAbout}
-            </button>
-            <button
-              onClick={() => onNavigate && onNavigate('contact')}
-              className={`px-3 py-1.5 rounded-lg transition-colors ${
-                currentView === 'contact'
-                  ? 'bg-[#8B0000] text-white font-bold shadow-2xs'
-                  : 'hover:bg-[#F9F4EC] hover:text-[#8B0000]'
-              }`}
-            >
-              {t.navContact}
-            </button>
-          </nav>
-
-          {/* Search Bar - Desktop (Kept exactly intact) */}
-          <div className="hidden md:flex flex-1 max-w-md mx-4">
+          {/* Search Bar - Desktop (Centered and Spacious) */}
+          <div className="hidden md:flex flex-1 max-w-xl mx-4 lg:mx-8">
             <div className="relative w-full">
               <input
                 type="text"
                 value={searchQuery}
                 onChange={(e) => onSearchChange(e.target.value)}
                 placeholder={t.searchPlaceholder}
-                className="w-full pl-9 pr-4 py-2 text-sm bg-[#F9F4EC] border border-[#EAD8C0] rounded-full focus:outline-none focus:ring-2 focus:ring-[#8B0000]/30 focus:border-[#8B0000] placeholder-[#2D241E]/50 transition-all text-[#2D241E]"
+                className="w-full pl-9 pr-8 py-2 text-sm bg-[#F9F4EC] border border-[#EAD8C0] rounded-full focus:outline-none focus:ring-2 focus:ring-[#8B0000]/30 focus:border-[#8B0000] placeholder-[#2D241E]/50 transition-all text-[#2D241E]"
               />
               <Search className="w-4 h-4 text-[#8B0000]/60 absolute left-3 top-1/2 -translate-y-1/2" />
               {searchQuery && (
                 <button 
                   onClick={() => onSearchChange('')}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-stone-400 hover:text-stone-600"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-stone-400 hover:text-stone-600 cursor-pointer"
                 >
                   ✕
                 </button>
@@ -198,12 +142,12 @@ export const Navbar: React.FC<NavbarProps> = ({
             </div>
           </div>
 
-          {/* Actions & Utilities - Sleek proportions */}
-          <div className="flex items-center gap-1.5 sm:gap-2">
+          {/* Actions & Utilities */}
+          <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
             {/* Custom Tailoring Button */}
             <button
               onClick={onOpenCustomOrder}
-              className="hidden lg:flex items-center gap-1 px-3.5 py-1.5 bg-[#8B0000] text-white hover:bg-[#A52A2A] rounded-full text-[11px] font-bold uppercase tracking-wider transition-colors shadow-xs shrink-0"
+              className="hidden lg:flex items-center gap-1 px-3.5 py-1.5 bg-[#8B0000] text-white hover:bg-[#A52A2A] rounded-full text-[11px] font-bold uppercase tracking-wider transition-colors shadow-xs shrink-0 cursor-pointer"
             >
               <Sparkles className="w-3 h-3 text-[#C5A059]" />
               <span>{t.customOrderBtn}</span>
@@ -212,7 +156,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             {/* Currency Selector */}
             <button
               onClick={() => onCurrencyChange(currency === 'ETB' ? 'USD' : 'ETB')}
-              className="px-2 py-1 text-[11px] font-semibold rounded-md border border-[#EAD8C0] bg-white text-[#2D241E] hover:border-[#8B0000] transition-colors"
+              className="px-2 py-1 text-[11px] font-semibold rounded-md border border-[#EAD8C0] bg-white text-[#2D241E] hover:border-[#8B0000] transition-colors cursor-pointer"
               title="Toggle currency"
             >
               {currency}
@@ -223,7 +167,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               <button
                 type="button"
                 onClick={() => onLanguageChange('am')}
-                className={`px-1.5 py-0.5 rounded text-[10px] sm:text-[11px] transition-colors ${
+                className={`px-1.5 py-0.5 rounded text-[10px] sm:text-[11px] transition-colors cursor-pointer ${
                   language === 'am' 
                     ? 'bg-[#8B0000] text-white font-bold' 
                     : 'text-[#2D241E] hover:text-[#8B0000]'
@@ -235,7 +179,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               <button
                 type="button"
                 onClick={() => onLanguageChange('ti')}
-                className={`px-1.5 py-0.5 rounded text-[10px] sm:text-[11px] transition-colors ${
+                className={`px-1.5 py-0.5 rounded text-[10px] sm:text-[11px] transition-colors cursor-pointer ${
                   language === 'ti' 
                     ? 'bg-[#8B0000] text-white font-bold' 
                     : 'text-[#2D241E] hover:text-[#8B0000]'
@@ -247,7 +191,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               <button
                 type="button"
                 onClick={() => onLanguageChange('en')}
-                className={`px-1.5 py-0.5 rounded text-[10px] sm:text-[11px] transition-colors ${
+                className={`px-1.5 py-0.5 rounded text-[10px] sm:text-[11px] transition-colors cursor-pointer ${
                   language === 'en' 
                     ? 'bg-[#8B0000] text-white font-bold' 
                     : 'text-[#2D241E] hover:text-[#8B0000]'
@@ -262,7 +206,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             <button
               onClick={onOpenCart}
               id="cart-button"
-              className="relative p-2 rounded-full bg-[#2D241E] text-white hover:bg-[#8B0000] transition-colors flex items-center justify-center shadow-xs"
+              className="relative p-2 rounded-full bg-[#2D241E] text-white hover:bg-[#8B0000] transition-colors flex items-center justify-center shadow-xs cursor-pointer"
               aria-label="Shopping Cart"
             >
               <ShoppingBag className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#F9F4EC]" />
@@ -276,11 +220,97 @@ export const Navbar: React.FC<NavbarProps> = ({
             {/* Mobile Menu Button */}
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="md:hidden p-1.5 text-[#2D241E] hover:text-[#8B0000] rounded-md"
+              className="md:hidden p-1.5 text-[#2D241E] hover:text-[#8B0000] rounded-md cursor-pointer"
               aria-label="Toggle Navigation Menu"
             >
               {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
             </button>
+          </div>
+        </div>
+
+        {/* Row 2: Desktop Navigation Links (Moved below search to keep abundant space) */}
+        <div className="hidden md:flex items-center justify-between pt-2 pb-0.5 mt-2 border-t border-[#EAD8C0]/70 text-xs font-semibold text-[#2D241E]">
+          <nav className="flex items-center gap-1 sm:gap-2">
+            <button
+              onClick={() => onNavigate && onNavigate('home')}
+              className={`px-3 py-1.5 rounded-lg transition-colors cursor-pointer ${
+                currentView === 'home'
+                  ? 'bg-[#8B0000] text-white font-bold shadow-2xs'
+                  : 'hover:bg-[#F9F4EC] hover:text-[#8B0000]'
+              }`}
+            >
+              {t.navHome}
+            </button>
+            <button
+              onClick={() => onNavigate && onNavigate('products')}
+              className={`px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1.5 cursor-pointer ${
+                currentView === 'products' || currentView === 'catalog'
+                  ? 'bg-[#8B0000] text-white font-bold shadow-2xs'
+                  : 'hover:bg-[#F9F4EC] hover:text-[#8B0000]'
+              }`}
+            >
+              <ShoppingBag className="w-3.5 h-3.5" />
+              <span>{t.navProducts}</span>
+            </button>
+            <button
+              onClick={() => onNavigate && onNavigate('blogs')}
+              className={`px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1.5 cursor-pointer ${
+                currentView === 'blogs'
+                  ? 'bg-[#8B0000] text-white font-bold shadow-2xs'
+                  : 'hover:bg-[#F9F4EC] hover:text-[#8B0000]'
+              }`}
+            >
+              <BookOpen className="w-3.5 h-3.5 text-[#C5A059]" />
+              <span>{t.navBlogs}</span>
+            </button>
+            {onOpenMeasurementGuide && (
+              <button
+                onClick={onOpenMeasurementGuide}
+                className="px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1.5 hover:bg-[#F9F4EC] text-[#8B0000] font-bold cursor-pointer"
+                title={language === 'am' ? 'የልኬት አወሳሰድ መመሪያ' : 'Measurement Guide'}
+              >
+                <Ruler className="w-3.5 h-3.5 text-[#8B0000]" />
+                <span>{language === 'am' ? 'የልኬት አወሳሰድ' : language === 'ti' ? 'ልኬት ምውሳድ' : 'Measurements'}</span>
+              </button>
+            )}
+            <button
+              onClick={() => onNavigate && onNavigate('about')}
+              className={`px-3 py-1.5 rounded-lg transition-colors cursor-pointer ${
+                currentView === 'about'
+                  ? 'bg-[#8B0000] text-white font-bold shadow-2xs'
+                  : 'hover:bg-[#F9F4EC] hover:text-[#8B0000]'
+              }`}
+            >
+              {t.navAbout}
+            </button>
+            <button
+              onClick={() => onNavigate && onNavigate('contact')}
+              className={`px-3 py-1.5 rounded-lg transition-colors cursor-pointer ${
+                currentView === 'contact'
+                  ? 'bg-[#8B0000] text-white font-bold shadow-2xs'
+                  : 'hover:bg-[#F9F4EC] hover:text-[#8B0000]'
+              }`}
+            >
+              {t.navContact}
+            </button>
+          </nav>
+
+          {/* Desktop Right Sub-bar Quick Links */}
+          <div className="flex items-center gap-3 text-[11px] text-[#2D241E]/75">
+            <span className="hidden lg:flex items-center gap-1">
+              <MapPin className="w-3 h-3 text-[#8B0000]" />
+              <span>Shiromeda, Addis Ababa</span>
+            </span>
+            <span className="hidden lg:inline text-[#EAD8C0]">|</span>
+            <a 
+              href={STORE_INFO.telegramChannel}
+              target="_blank"
+              rel="noreferrer"
+              className="flex items-center gap-1 hover:text-[#29b6f6] font-medium transition-colors"
+            >
+              <Send className="w-3 h-3 text-[#29b6f6]" />
+              <span>Telegram Channel</span>
+            </a>
           </div>
         </div>
 
@@ -298,7 +328,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             {searchQuery && (
               <button 
                 onClick={() => onSearchChange('')}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-stone-400"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-stone-400 cursor-pointer"
               >
                 ✕
               </button>
@@ -309,6 +339,14 @@ export const Navbar: React.FC<NavbarProps> = ({
         {/* Mobile Expandable Drawer */}
         {mobileMenuOpen && (
           <div className="mt-2.5 pt-2.5 border-t border-[#EAD8C0] md:hidden flex flex-col gap-2.5">
+            {/* Mobile Brand Identity Lockup */}
+            <div className="p-2.5 bg-[#F9F4EC] border border-[#EAD8C0] rounded-2xl flex items-center justify-between">
+              <AbelHabeshaLogo variant="dual" size="sm" showPhone={true} />
+              <span className="text-[10px] font-bold text-[#8B0000] bg-white px-2 py-0.5 rounded-full border border-[#EAD8C0] shadow-2xs">
+                {language === 'ti' ? 'ወግዓዊ' : language === 'am' ? 'ኦፊሴላዊ' : 'Official'}
+              </span>
+            </div>
+
             {/* Mobile Page Navigation Grid */}
             <div className="grid grid-cols-2 gap-1.5">
               <button
@@ -316,7 +354,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                   if (onNavigate) onNavigate('home');
                   setMobileMenuOpen(false);
                 }}
-                className={`py-2 px-3 rounded-xl text-xs font-bold text-left transition-colors flex items-center gap-1.5 ${
+                className={`py-2 px-3 rounded-xl text-xs font-bold text-left transition-colors flex items-center gap-1.5 cursor-pointer ${
                   currentView === 'home'
                     ? 'bg-[#8B0000] text-white'
                     : 'bg-[#F9F4EC] text-[#2D241E] hover:bg-[#EAD8C0]/50'
@@ -331,7 +369,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                   if (onNavigate) onNavigate('products');
                   setMobileMenuOpen(false);
                 }}
-                className={`py-2 px-3 rounded-xl text-xs font-bold text-left transition-colors flex items-center gap-1.5 ${
+                className={`py-2 px-3 rounded-xl text-xs font-bold text-left transition-colors flex items-center gap-1.5 cursor-pointer ${
                   currentView === 'products' || currentView === 'catalog'
                     ? 'bg-[#8B0000] text-white'
                     : 'bg-[#F9F4EC] text-[#2D241E] hover:bg-[#EAD8C0]/50'
@@ -343,10 +381,25 @@ export const Navbar: React.FC<NavbarProps> = ({
 
               <button
                 onClick={() => {
+                  if (onNavigate) onNavigate('blogs');
+                  setMobileMenuOpen(false);
+                }}
+                className={`py-2 px-3 rounded-xl text-xs font-bold text-left transition-colors flex items-center gap-1.5 cursor-pointer ${
+                  currentView === 'blogs'
+                    ? 'bg-[#8B0000] text-white'
+                    : 'bg-[#F9F4EC] text-[#2D241E] hover:bg-[#EAD8C0]/50'
+                }`}
+              >
+                <span>📰</span>
+                <span>{t.navBlogs}</span>
+              </button>
+
+              <button
+                onClick={() => {
                   if (onNavigate) onNavigate('about');
                   setMobileMenuOpen(false);
                 }}
-                className={`py-2 px-3 rounded-xl text-xs font-bold text-left transition-colors flex items-center gap-1.5 ${
+                className={`py-2 px-3 rounded-xl text-xs font-bold text-left transition-colors flex items-center gap-1.5 cursor-pointer ${
                   currentView === 'about'
                     ? 'bg-[#8B0000] text-white'
                     : 'bg-[#F9F4EC] text-[#2D241E] hover:bg-[#EAD8C0]/50'
@@ -361,7 +414,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                   if (onNavigate) onNavigate('contact');
                   setMobileMenuOpen(false);
                 }}
-                className={`py-2 px-3 rounded-xl text-xs font-bold text-left transition-colors flex items-center gap-1.5 ${
+                className={`py-2 px-3 rounded-xl text-xs font-bold text-left transition-colors flex items-center gap-1.5 cursor-pointer ${
                   currentView === 'contact'
                     ? 'bg-[#8B0000] text-white'
                     : 'bg-[#F9F4EC] text-[#2D241E] hover:bg-[#EAD8C0]/50'
@@ -370,6 +423,19 @@ export const Navbar: React.FC<NavbarProps> = ({
                 <span>📞</span>
                 <span>{t.navContact}</span>
               </button>
+
+              {onOpenMeasurementGuide && (
+                <button
+                  onClick={() => {
+                    onOpenMeasurementGuide();
+                    setMobileMenuOpen(false);
+                  }}
+                  className="py-2 px-3 rounded-xl text-xs font-bold text-left transition-colors flex items-center gap-1.5 bg-[#8B0000]/10 text-[#8B0000] col-span-2 hover:bg-[#8B0000]/20 cursor-pointer"
+                >
+                  <Ruler className="w-4 h-4 text-[#8B0000]" />
+                  <span>{language === 'am' ? 'የልኬት አወሳሰድ መመሪያ (ቪድዮና ፎቶ)' : 'Measurement Guide (Video & Photo)'}</span>
+                </button>
+              )}
             </div>
 
             {/* Mobile Language Switcher */}

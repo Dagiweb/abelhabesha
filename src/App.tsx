@@ -12,8 +12,11 @@ import { AboutUsPage } from './components/AboutUsPage';
 import { ContactUsPage } from './components/ContactUsPage';
 import { AdminPanel } from './components/AdminPanel';
 import { AdminAuth } from './components/AdminAuth';
+import { BlogPage } from './components/BlogPage';
 import { CustomTailoringModal } from './components/CustomTailoringModal';
 import { CartModal } from './components/CartModal';
+import { MeasurementGuideModal } from './components/MeasurementGuideModal';
+import { ReturnPolicyModal } from './components/ReturnPolicyModal';
 import { Footer } from './components/Footer';
 import { PRODUCTS } from './data/products';
 import { STORE_INFO } from './data/categories';
@@ -76,12 +79,13 @@ export default function App() {
     return () => unsubscribe();
   }, []);
   
-  // Page View Navigation: 'home' | 'products' | 'detail' | 'about' | 'contact' | 'admin'
+  // Page View Navigation: 'home' | 'products' | 'detail' | 'about' | 'contact' | 'admin' | 'blogs'
   const [currentView, setCurrentView] = useState<ViewType>(() => {
     try {
       const pathname = window.location.pathname.toLowerCase().replace(/\/$/, '');
       const hash = window.location.hash;
       if (pathname === '/admin' || hash === '#/admin' || hash === '#admin') return 'admin';
+      if (pathname === '/blogs' || hash === '#/blogs' || hash === '#/blog') return 'blogs';
       if (pathname === '/products' || hash === '#/products' || hash === '#/catalog') return 'products';
       if (pathname === '/about' || hash === '#/about') return 'about';
       if (pathname === '/contact' || hash === '#/contact') return 'contact';
@@ -94,6 +98,8 @@ export default function App() {
   // Modals state
   const [isCustomOrderOpen, setIsCustomOrderOpen] = useState(false);
   const [isCartOpen, setIsCartOpen] = useState(false);
+  const [isGlobalMeasurementOpen, setIsGlobalMeasurementOpen] = useState(false);
+  const [isGlobalReturnPolicyOpen, setIsGlobalReturnPolicyOpen] = useState(false);
   const [cart, setCart] = useState<CartItem[]>([]);
 
   const isAm = language === 'am';
@@ -123,6 +129,10 @@ export default function App() {
         setCurrentView('products');
         setSelectedProduct(null);
         return;
+      } else if (hash === '#/blogs' || hash === '#/blog' || pathname === '/blogs') {
+        setCurrentView('blogs');
+        setSelectedProduct(null);
+        return;
       } else if (hash === '#/about' || pathname === '/about') {
         setCurrentView('about');
         setSelectedProduct(null);
@@ -150,6 +160,9 @@ export default function App() {
       setSelectedProduct(null);
     } else if (target === 'products') {
       window.location.hash = '#/products';
+      setSelectedProduct(null);
+    } else if (target === 'blogs') {
+      window.location.hash = '#/blogs';
       setSelectedProduct(null);
     } else if (target === 'about') {
       window.location.hash = '#/about';
@@ -280,6 +293,7 @@ export default function App() {
           }
         }}
         onOpenCustomOrder={() => setIsCustomOrderOpen(true)}
+        onOpenMeasurementGuide={() => setIsGlobalMeasurementOpen(true)}
         onLogoClick={() => handleNavigate('home')}
         currentView={currentView}
         onNavigate={handleNavigate}
@@ -361,7 +375,18 @@ export default function App() {
           />
         )}
 
-        {/* VIEW 6: ADMIN PANEL (PROTECTED WITH AUTH) */}
+        {/* VIEW 6: BLOGS & CULTURAL HERITAGE ARTICLES */}
+        {currentView === 'blogs' && (
+          <BlogPage
+            language={language}
+            onNavigateToProducts={() => handleNavigate('products')}
+            onOpenCustomOrder={() => setIsCustomOrderOpen(true)}
+            onOpenMeasurementGuide={() => setIsGlobalMeasurementOpen(true)}
+            onOpenReturnPolicy={() => setIsGlobalReturnPolicyOpen(true)}
+          />
+        )}
+
+        {/* VIEW 7: ADMIN PANEL (PROTECTED WITH AUTH) */}
         {currentView === 'admin' && (
           <AdminAuth
             language={language}
@@ -391,6 +416,8 @@ export default function App() {
           handleNavigate('products');
         }}
         onNavigate={handleNavigate}
+        onOpenMeasurementGuide={() => setIsGlobalMeasurementOpen(true)}
+        onOpenReturnPolicy={() => setIsGlobalReturnPolicyOpen(true)}
       />
 
       {/* Custom Tailoring Modal */}
@@ -399,6 +426,24 @@ export default function App() {
         onClose={() => setIsCustomOrderOpen(false)}
         language={language}
       />
+
+      {/* Measurement Guide Modal (Global) */}
+      {isGlobalMeasurementOpen && (
+        <MeasurementGuideModal
+          isOpen={isGlobalMeasurementOpen}
+          onClose={() => setIsGlobalMeasurementOpen(false)}
+          language={language}
+        />
+      )}
+
+      {/* Return & Order Policy Modal (Global) */}
+      {isGlobalReturnPolicyOpen && (
+        <ReturnPolicyModal
+          isOpen={isGlobalReturnPolicyOpen}
+          onClose={() => setIsGlobalReturnPolicyOpen(false)}
+          language={language}
+        />
+      )}
 
       {/* Cart Drawer / Modal */}
       <CartModal

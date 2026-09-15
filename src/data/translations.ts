@@ -179,6 +179,7 @@ export interface TranslationDictionary {
   navHome: string;
   navCatalog: string;
   navProducts: string;
+  navBlogs: string;
   navAbout: string;
   navContact: string;
   navAdmin: string;
@@ -379,6 +380,7 @@ export const TRANSLATIONS: Record<Language, TranslationDictionary> = {
     navHome: 'መነሻ',
     navCatalog: 'ካታሎግ',
     navProducts: 'ምርቶች',
+    navBlogs: 'ብሎግ / መረጃ',
     navAbout: 'ስለ እኛ',
     navContact: 'ያግኙን',
     navAdmin: 'አድሚን',
@@ -578,6 +580,7 @@ export const TRANSLATIONS: Record<Language, TranslationDictionary> = {
     navHome: 'መበገሲ',
     navCatalog: 'ካታሎግ',
     navProducts: 'ምህርቲ',
+    navBlogs: 'ብሎግ / ፍልጠት',
     navAbout: 'ብዛዕባና',
     navContact: 'ርኸቡና',
     navAdmin: 'ኣድሚን',
@@ -777,6 +780,7 @@ export const TRANSLATIONS: Record<Language, TranslationDictionary> = {
     navHome: 'Home',
     navCatalog: 'Catalog',
     navProducts: 'Products',
+    navBlogs: 'Blogs & Guides',
     navAbout: 'About Us',
     navContact: 'Contact Us',
     navAdmin: 'Admin Panel',

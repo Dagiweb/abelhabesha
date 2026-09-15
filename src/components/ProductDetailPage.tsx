@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Product, Language } from '../types';
 import { STORE_INFO, getCategoryDisplay } from '../data/categories';
 import { PRODUCTS } from '../data/products';
@@ -20,8 +20,14 @@ import {
   MapPin, 
   Sparkles,
   ChevronRight,
-  Heart
+  ChevronLeft,
+  Heart,
+  FileText,
+  PlayCircle,
+  Layers
 } from 'lucide-react';
+import { MeasurementGuideModal } from './MeasurementGuideModal';
+import { ReturnPolicyModal } from './ReturnPolicyModal';
 
 interface ProductDetailPageProps {
   product: Product;
@@ -53,7 +59,26 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
   const [selectedImage, setSelectedImage] = useState<string>(product.image);
   const [selectedSize, setSelectedSize] = useState<string>('M');
   const [isCustomMeasurement, setIsCustomMeasurement] = useState(false);
-  const [measurements, setMeasurements] = useState({ length: '', chest: '', waist: '' });
+  const [measurementGender, setMeasurementGender] = useState<'women' | 'men'>('women');
+  const [womenMeasurements, setWomenMeasurements] = useState({
+    seder: '',
+    height: '',
+    bust: '',
+    waist: '',
+    shoulder: '',
+    sleeve: ''
+  });
+  const [menMeasurements, setMenMeasurements] = useState({
+    shirtLength: '',
+    chest: '',
+    belly: '',
+    shoulder: '',
+    sleeve: '',
+    waist: '',
+    pantsLength: ''
+  });
+  const [guideModalOpen, setGuideModalOpen] = useState(false);
+  const [policyModalOpen, setPolicyModalOpen] = useState(false);
   const [copied, setCopied] = useState(false);
   const [addedNotice, setAddedNotice] = useState(false);
   const [isWishlisted, setIsWishlisted] = useState(false);
@@ -65,7 +90,29 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
     setAddedNotice(false);
   }, [product.id, product.image]);
 
-  const images = [product.image, ...(product.secondaryImages || [])];
+  const images = useMemo(() => {
+    const list = [product.image];
+    if (product.secondaryImages && Array.isArray(product.secondaryImages)) {
+      for (const img of product.secondaryImages) {
+        if (img && typeof img === 'string' && img.trim() && !list.includes(img)) {
+          list.push(img);
+        }
+      }
+    }
+    return list;
+  }, [product.image, product.secondaryImages]);
+
+  const currentImageIdx = images.indexOf(selectedImage) >= 0 ? images.indexOf(selectedImage) : 0;
+
+  const handlePrevImage = () => {
+    const prevIdx = (currentImageIdx - 1 + images.length) % images.length;
+    setSelectedImage(images[prevIdx]);
+  };
+
+  const handleNextImage = () => {
+    const nextIdx = (currentImageIdx + 1) % images.length;
+    setSelectedImage(images[nextIdx]);
+  };
 
   const formatPrice = (etb: number) => {
     if (currency === 'USD') {
@@ -79,15 +126,18 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
     ? Math.round(((product.originalPriceETB - product.priceETB) / product.originalPriceETB) * 100)
     : null;
 
+  const depositPrice = Math.round(product.priceETB * 0.5);
+
   // Build message for WhatsApp & Telegram
   const getOrderMessage = () => {
-    const sizeText = isCustomMeasurement 
-      ? (language === 'ti' 
-          ? `ብልክዒ ዝስራሕ (ቁመት: ${measurements.length || '-'}, ደረት: ${measurements.chest || '-'}, ወገብ: ${measurements.waist || '-'})`
-          : language === 'en'
-          ? `Custom Fit (Length: ${measurements.length || '-'}, Chest: ${measurements.chest || '-'}, Waist: ${measurements.waist || '-'})`
-          : `በልክ የሚዘጋጅ (ቁመት: ${measurements.length || '-'}, ደረት: ${measurements.chest || '-'}, ወገብ: ${measurements.waist || '-'})`)
-      : selectedSize;
+    let sizeText = selectedSize;
+    if (isCustomMeasurement) {
+      if (measurementGender === 'women') {
+        sizeText = `በልክ የሚዘጋጅ (የሴቶች - ሠደር: ${womenMeasurements.seder || '-'}, ቁመት: ${womenMeasurements.height || '-'}, ጡት ዙሪያ: ${womenMeasurements.bust || '-'}, ወገብ ዙሪያ: ${womenMeasurements.waist || '-'}, ትከሻ: ${womenMeasurements.shoulder || '-'}, እጅጌ: ${womenMeasurements.sleeve || '-'})`;
+      } else {
+        sizeText = `በልክ የሚዘጋጅ (የወንዶች - ሸሚዝ ቁመት: ${menMeasurements.shirtLength || '-'}, ደረት: ${menMeasurements.chest || '-'}, ሆድ: ${menMeasurements.belly || '-'}, ትከሻ: ${menMeasurements.shoulder || '-'}, እጅ: ${menMeasurements.sleeve || '-'}, ሱሪ ቁመት/ወገብ: ${menMeasurements.pantsLength || '-'} / ${menMeasurements.waist || '-'})`;
+      }
+    }
 
     if (language === 'ti') {
       return encodeURIComponent(
@@ -95,7 +145,8 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
         `• ስም ክዳን: ${productName}\n` +
         `• ኮድ: ${product.code}\n` +
         `• ጨርቂ: ${productFabric}\n` +
-        `• ዋጋ: ${product.priceETB.toLocaleString()} ቅርሺ\n` +
+        `• ናይ ኣንዱ ዋጋ: ${product.priceETB.toLocaleString()} ቅርሺ\n` +
+        `• ቀብዲ (50%): ${depositPrice.toLocaleString()} ቅርሺ\n` +
         `• መጠን/ልክዒ: ${sizeText}\n` +
         `• ናይ ቆፀሮ ግዜ: ኣብ ${product.tailoringDays} መዓልቲ ውሽጢ\n\n` +
         `እባክኹም ትእዛዘይ ኣረጋግፁለይ። የቐንየለይ!`
@@ -108,10 +159,11 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
         `• Attire: ${product.nameEn}\n` +
         `• Code: ${product.code}\n` +
         `• Fabric: ${product.fabricEn}\n` +
-        `• Price: ${product.priceETB.toLocaleString()} ETB\n` +
-        `• Size: ${sizeText}\n` +
-        `• Turnaround: Within ${product.tailoringDays} days\n\n` +
-        `Please confirm availability. Thank you!`
+        `• Unit Price: ${product.priceETB.toLocaleString()} ETB\n` +
+        `• Advance Deposit (50%): ${depositPrice.toLocaleString()} ETB\n` +
+        `• Size/Fit: ${sizeText}\n` +
+        `• Appointment/Turnaround: Within ${product.tailoringDays} days\n\n` +
+        `Please confirm availability and start my order. Thank you!`
       );
     }
 
@@ -120,9 +172,10 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
       `• የልብስ ስም: ${product.nameAm} (${product.nameEn})\n` +
       `• የኮድ ቁጥር: ${product.code}\n` +
       `• ጨርቅ: ${product.fabricAm}\n` +
-      `• ዋጋ: ${product.priceETB.toLocaleString()} ብር\n` +
+      `• የኣንዱ ዋጋ: ${product.priceETB.toLocaleString()} ብር\n` +
+      `• ቀብድ (50%): ${depositPrice.toLocaleString()} ብር\n` +
       `• መጠን/ልክ: ${sizeText}\n` +
-      `• የቀጠሮ ግዜ: በ ${product.tailoringDays} ቀናት ውስጥ\n\n` +
+      `• የቀጠሮ ቀን/ግዜ: በ ${product.tailoringDays} ቀናት ውስጥ\n\n` +
       `እባክዎ ትዕዛዜን ያረጋግጡልኝ። አመሰግናለሁ!`
     );
   };
@@ -132,6 +185,7 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
       `${language === 'ti' ? 'ኣቤል ሓበሻ ባህላዊ ክዳውንቲ' : language === 'en' ? 'Abel Habesha Traditional Attire' : 'አቤል ሓበሻ አልባሳት'} - ${productName}\n` +
       `Code: ${product.code}\n` +
       `Price: ${formatPrice(product.priceETB)}\n` +
+      `Deposit (50%): ${depositPrice.toLocaleString()} ETB\n` +
       `Fabric: ${productFabric}\n` +
       `Phone: ${STORE_INFO.phoneDisplay}\n` +
       `Address: ${currentAddress}`;
@@ -141,10 +195,11 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
   };
 
   const handleAddToCart = () => {
+    const customData = measurementGender === 'women' ? womenMeasurements : menMeasurements;
     onAddToCart(
       product,
-      isCustomMeasurement ? 'Custom Measurement' : selectedSize,
-      isCustomMeasurement ? measurements : undefined
+      isCustomMeasurement ? `Custom (${measurementGender})` : selectedSize,
+      isCustomMeasurement ? customData : undefined
     );
     setAddedNotice(true);
     setTimeout(() => setAddedNotice(false), 2500);
@@ -232,7 +287,7 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
           <div className="lg:col-span-7 flex flex-col gap-4">
             
             {/* Primary High-Resolution Display */}
-            <div className="relative aspect-3/4 sm:aspect-4/5 rounded-3xl overflow-hidden bg-white border border-[#EAD8C0] shadow-sm">
+            <div className="relative aspect-3/4 sm:aspect-4/5 rounded-3xl overflow-hidden bg-white border border-[#EAD8C0] shadow-sm group/gallery">
               <img
                 src={selectedImage}
                 alt={productName}
@@ -245,11 +300,45 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
                 {product.code}
               </div>
 
-              {/* In-Stock / Bespoke Ready Badge */}
-              <div className="absolute top-4 right-4 bg-[#C5A059] text-[#2D241E] text-xs font-bold px-3 py-1 rounded-full shadow-md flex items-center gap-1.5">
-                <Sparkles className="w-3.5 h-3.5 text-[#2D241E]" />
-                <span>{t.bespokeReady}</span>
+              {/* In-Stock / Bespoke Ready Badge & Image Counter */}
+              <div className="absolute top-4 right-4 flex items-center gap-2">
+                {images.length > 1 && (
+                  <div className="bg-black/60 backdrop-blur-md text-[#FDFCF8] text-xs font-bold px-3 py-1 rounded-full shadow-md flex items-center gap-1.5">
+                    <Layers className="w-3.5 h-3.5 text-[#C5A059]" />
+                    <span>{currentImageIdx + 1} / {images.length}</span>
+                  </div>
+                )}
+                <div className="bg-[#C5A059] text-[#2D241E] text-xs font-bold px-3 py-1 rounded-full shadow-md flex items-center gap-1.5">
+                  <Sparkles className="w-3.5 h-3.5 text-[#2D241E]" />
+                  <span>{t.bespokeReady}</span>
+                </div>
               </div>
+
+              {/* Next & Previous Arrows */}
+              {images.length > 1 && (
+                <>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handlePrevImage();
+                    }}
+                    className="absolute left-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white/85 hover:bg-white text-[#2D241E] shadow-md flex items-center justify-center transition-all hover:scale-110 active:scale-95 cursor-pointer z-10"
+                    title="Previous image"
+                  >
+                    <ChevronLeft className="w-5 h-5 text-[#8B0000]" />
+                  </button>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleNextImage();
+                    }}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white/85 hover:bg-white text-[#2D241E] shadow-md flex items-center justify-center transition-all hover:scale-110 active:scale-95 cursor-pointer z-10"
+                    title="Next image"
+                  >
+                    <ChevronRight className="w-5 h-5 text-[#8B0000]" />
+                  </button>
+                </>
+              )}
 
               {/* Discount pill if available */}
               {discountPercent && (
@@ -266,13 +355,16 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
                   <button
                     key={idx}
                     onClick={() => setSelectedImage(img)}
-                    className={`relative w-20 h-24 sm:w-24 sm:h-28 rounded-2xl overflow-hidden border-2 transition-all shrink-0 ${
+                    className={`relative w-20 h-24 sm:w-24 sm:h-28 rounded-2xl overflow-hidden border-2 transition-all shrink-0 cursor-pointer ${
                       selectedImage === img 
                         ? 'border-[#8B0000] scale-102 shadow-md ring-2 ring-[#8B0000]/20' 
-                        : 'border-transparent opacity-70 hover:opacity-100 hover:border-[#EAD8C0]'
+                        : 'border-[#EAD8C0]/60 opacity-70 hover:opacity-100 hover:border-[#8B0000]'
                     }`}
                   >
-                    <img src={img} alt="Product view" referrerPolicy="no-referrer" className="w-full h-full object-cover" />
+                    <img src={img} alt={`View ${idx + 1}`} referrerPolicy="no-referrer" className="w-full h-full object-cover" />
+                    <span className="absolute bottom-1 right-1 px-1.5 py-0.5 rounded-sm bg-black/60 text-white text-[9px] font-bold">
+                      {idx === 0 ? (language === 'am' ? 'ዋና' : 'Cover') : `${idx + 1}`}
+                    </span>
                   </button>
                 ))}
               </div>
@@ -405,6 +497,25 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
                 </div>
               </div>
 
+              {/* Pricing & Deposit Transparency Card */}
+              <div className="mb-6 p-4 rounded-2xl bg-[#F9F4EC] border border-[#EAD8C0] space-y-2">
+                <div className="flex items-center justify-between text-xs">
+                  <span className="text-[#2D241E]/70 font-medium">የኣንዱ ዋጋ (Unit Price):</span>
+                  <span className="font-bold text-sm text-[#2D241E]">{formatPrice(product.priceETB)}</span>
+                </div>
+                <div className="flex items-center justify-between text-xs pt-1 border-t border-[#EAD8C0]">
+                  <span className="font-bold text-[#8B0000] flex items-center gap-1">
+                    <Sparkles className="w-3.5 h-3.5 text-[#C5A059]" />
+                    <span>ቀብድ (50% ቅድመ-ክፍያ):</span>
+                  </span>
+                  <span className="font-black text-sm text-[#8B0000]">{depositPrice.toLocaleString()} {currency === 'USD' ? 'ETB' : (language === 'ti' ? 'ቅርሺ' : 'ብር')}</span>
+                </div>
+                <div className="flex items-center justify-between text-xs text-[#2D241E]/80">
+                  <span className="text-[#2D241E]/70">የቀጠሮ ቀን / የስራ ግዜ:</span>
+                  <span className="font-bold text-[#2E4739]">በ {product.tailoringDays} ቀናት ውስጥ</span>
+                </div>
+              </div>
+
               {/* Size & Custom Fit Selector */}
               <div className="mb-6 p-4 sm:p-5 rounded-2xl bg-white border border-[#EAD8C0] shadow-2xs">
                 <div className="flex items-center justify-between mb-3">
@@ -413,13 +524,23 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
                     <span>{t.selectSizeLabel}</span>
                   </label>
 
-                  <button
-                    type="button"
-                    onClick={() => setIsCustomMeasurement(!isCustomMeasurement)}
-                    className="text-xs font-bold text-[#8B0000] hover:underline"
-                  >
-                    {isCustomMeasurement ? t.switchToStandardSize : t.needCustomFit}
-                  </button>
+                  <div className="flex items-center gap-3">
+                    <button
+                      type="button"
+                      onClick={() => setGuideModalOpen(true)}
+                      className="text-xs font-bold text-[#C5A059] hover:text-[#8B0000] flex items-center gap-1 cursor-pointer"
+                    >
+                      <PlayCircle className="w-3.5 h-3.5" />
+                      <span>የልኬት መመሪያ</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setIsCustomMeasurement(!isCustomMeasurement)}
+                      className="text-xs font-bold text-[#8B0000] hover:underline cursor-pointer"
+                    >
+                      {isCustomMeasurement ? t.switchToStandardSize : t.needCustomFit}
+                    </button>
+                  </div>
                 </div>
 
                 {!isCustomMeasurement ? (
@@ -428,7 +549,7 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
                       <button
                         key={sz}
                         onClick={() => setSelectedSize(sz)}
-                        className={`py-2.5 text-xs sm:text-sm font-bold rounded-xl border transition-all ${
+                        className={`py-2.5 text-xs sm:text-sm font-bold rounded-xl border transition-all cursor-pointer ${
                           selectedSize === sz
                             ? 'bg-[#8B0000] text-white border-[#8B0000] shadow-sm'
                             : 'bg-[#F9F4EC] text-[#2D241E] border-[#EAD8C0] hover:border-[#8B0000]'
@@ -439,35 +560,141 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
                     ))}
                   </div>
                 ) : (
-                  <div className="p-3 bg-[#F9F4EC] rounded-xl border border-[#EAD8C0] space-y-2.5">
-                    <p className="text-[11px] text-[#2D241E]/80">
-                      {t.customFitHelp}
-                    </p>
-                    <div className="grid grid-cols-3 gap-2">
-                      <input
-                        type="text"
-                        placeholder={t.lengthPlaceholder}
-                        value={measurements.length}
-                        onChange={(e) => setMeasurements({ ...measurements, length: e.target.value })}
-                        className="text-xs p-2 bg-white border border-[#EAD8C0] rounded-lg focus:outline-none focus:border-[#8B0000]"
-                      />
-                      <input
-                        type="text"
-                        placeholder={t.chestPlaceholder}
-                        value={measurements.chest}
-                        onChange={(e) => setMeasurements({ ...measurements, chest: e.target.value })}
-                        className="text-xs p-2 bg-white border border-[#EAD8C0] rounded-lg focus:outline-none focus:border-[#8B0000]"
-                      />
-                      <input
-                        type="text"
-                        placeholder={t.waistPlaceholder}
-                        value={measurements.waist}
-                        onChange={(e) => setMeasurements({ ...measurements, waist: e.target.value })}
-                        className="text-xs p-2 bg-white border border-[#EAD8C0] rounded-lg focus:outline-none focus:border-[#8B0000]"
-                      />
+                  <div className="p-3.5 bg-[#F9F4EC] rounded-xl border border-[#EAD8C0] space-y-3">
+                    <div className="flex items-center justify-between">
+                      <p className="text-[11px] text-[#2D241E]/80 font-medium">
+                        ትክክለኛ ልክዎን ያስገቡ ወይም በልኬት መመሪያው መሠረት ይለኩ፦
+                      </p>
+                      <div className="inline-flex rounded-lg bg-white p-0.5 border border-[#EAD8C0] text-[10px]">
+                        <button
+                          type="button"
+                          onClick={() => setMeasurementGender('women')}
+                          className={`px-2 py-0.5 rounded font-bold cursor-pointer ${
+                            measurementGender === 'women' ? 'bg-[#8B0000] text-white' : 'text-[#2D241E]'
+                          }`}
+                        >
+                          የሴቶች
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setMeasurementGender('men')}
+                          className={`px-2 py-0.5 rounded font-bold cursor-pointer ${
+                            measurementGender === 'men' ? 'bg-[#8B0000] text-white' : 'text-[#2D241E]'
+                          }`}
+                        >
+                          የወንዶች
+                        </button>
+                      </div>
                     </div>
+
+                    {measurementGender === 'women' ? (
+                      <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                        <input
+                          type="text"
+                          placeholder="ሠደር"
+                          value={womenMeasurements.seder}
+                          onChange={(e) => setWomenMeasurements({ ...womenMeasurements, seder: e.target.value })}
+                          className="text-xs p-2 bg-white border border-[#EAD8C0] rounded-lg focus:outline-none focus:border-[#8B0000]"
+                        />
+                        <input
+                          type="text"
+                          placeholder="ቁመት"
+                          value={womenMeasurements.height}
+                          onChange={(e) => setWomenMeasurements({ ...womenMeasurements, height: e.target.value })}
+                          className="text-xs p-2 bg-white border border-[#EAD8C0] rounded-lg focus:outline-none focus:border-[#8B0000]"
+                        />
+                        <input
+                          type="text"
+                          placeholder="ጡት ዙሪያ"
+                          value={womenMeasurements.bust}
+                          onChange={(e) => setWomenMeasurements({ ...womenMeasurements, bust: e.target.value })}
+                          className="text-xs p-2 bg-white border border-[#EAD8C0] rounded-lg focus:outline-none focus:border-[#8B0000]"
+                        />
+                        <input
+                          type="text"
+                          placeholder="ወገብ ዙሪያ"
+                          value={womenMeasurements.waist}
+                          onChange={(e) => setWomenMeasurements({ ...womenMeasurements, waist: e.target.value })}
+                          className="text-xs p-2 bg-white border border-[#EAD8C0] rounded-lg focus:outline-none focus:border-[#8B0000]"
+                        />
+                        <input
+                          type="text"
+                          placeholder="ትከሻ"
+                          value={womenMeasurements.shoulder}
+                          onChange={(e) => setWomenMeasurements({ ...womenMeasurements, shoulder: e.target.value })}
+                          className="text-xs p-2 bg-white border border-[#EAD8C0] rounded-lg focus:outline-none focus:border-[#8B0000]"
+                        />
+                        <input
+                          type="text"
+                          placeholder="እጅጌ"
+                          value={womenMeasurements.sleeve}
+                          onChange={(e) => setWomenMeasurements({ ...womenMeasurements, sleeve: e.target.value })}
+                          className="text-xs p-2 bg-white border border-[#EAD8C0] rounded-lg focus:outline-none focus:border-[#8B0000]"
+                        />
+                      </div>
+                    ) : (
+                      <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                        <input
+                          type="text"
+                          placeholder="ሸሚዝ ቁመት"
+                          value={menMeasurements.shirtLength}
+                          onChange={(e) => setMenMeasurements({ ...menMeasurements, shirtLength: e.target.value })}
+                          className="text-xs p-2 bg-white border border-[#EAD8C0] rounded-lg focus:outline-none focus:border-[#8B0000]"
+                        />
+                        <input
+                          type="text"
+                          placeholder="ደረት ዙሪያ"
+                          value={menMeasurements.chest}
+                          onChange={(e) => setMenMeasurements({ ...menMeasurements, chest: e.target.value })}
+                          className="text-xs p-2 bg-white border border-[#EAD8C0] rounded-lg focus:outline-none focus:border-[#8B0000]"
+                        />
+                        <input
+                          type="text"
+                          placeholder="ሆድ ዙሪያ"
+                          value={menMeasurements.belly}
+                          onChange={(e) => setMenMeasurements({ ...menMeasurements, belly: e.target.value })}
+                          className="text-xs p-2 bg-white border border-[#EAD8C0] rounded-lg focus:outline-none focus:border-[#8B0000]"
+                        />
+                        <input
+                          type="text"
+                          placeholder="ትከሻ"
+                          value={menMeasurements.shoulder}
+                          onChange={(e) => setMenMeasurements({ ...menMeasurements, shoulder: e.target.value })}
+                          className="text-xs p-2 bg-white border border-[#EAD8C0] rounded-lg focus:outline-none focus:border-[#8B0000]"
+                        />
+                        <input
+                          type="text"
+                          placeholder="እጅ"
+                          value={menMeasurements.sleeve}
+                          onChange={(e) => setMenMeasurements({ ...menMeasurements, sleeve: e.target.value })}
+                          className="text-xs p-2 bg-white border border-[#EAD8C0] rounded-lg focus:outline-none focus:border-[#8B0000]"
+                        />
+                        <input
+                          type="text"
+                          placeholder="ሱሪ ቁመት/ወገብ"
+                          value={menMeasurements.pantsLength}
+                          onChange={(e) => setMenMeasurements({ ...menMeasurements, pantsLength: e.target.value })}
+                          className="text-xs p-2 bg-white border border-[#EAD8C0] rounded-lg focus:outline-none focus:border-[#8B0000]"
+                        />
+                      </div>
+                    )}
                   </div>
                 )}
+              </div>
+
+              {/* Policy Quick Link Button */}
+              <div className="mb-6 flex items-center justify-between px-3 py-2 bg-white border border-[#EAD8C0] rounded-xl text-xs">
+                <span className="flex items-center gap-1.5 text-[#2D241E]/80">
+                  <ShieldCheck className="w-4 h-4 text-[#2E4739]" />
+                  <span>ትዕዛዝ፣ የመመለሻ እና የጉምሩክ መመሪያዎች</span>
+                </span>
+                <button
+                  type="button"
+                  onClick={() => setPolicyModalOpen(true)}
+                  className="font-bold text-[#8B0000] hover:underline cursor-pointer"
+                >
+                  የመመለሻ ደንብ ይመልከቱ
+                </button>
               </div>
 
               {/* Direct Ordering Action CTAs */}
@@ -650,6 +877,23 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
           </a>
         </div>
       </div>
+
+      {/* Modals */}
+      {guideModalOpen && (
+        <MeasurementGuideModal
+          isOpen={guideModalOpen}
+          onClose={() => setGuideModalOpen(false)}
+          language={language}
+        />
+      )}
+
+      {policyModalOpen && (
+        <ReturnPolicyModal
+          isOpen={policyModalOpen}
+          onClose={() => setPolicyModalOpen(false)}
+          language={language}
+        />
+      )}
 
     </div>
   );

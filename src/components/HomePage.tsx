@@ -16,8 +16,17 @@ import {
   ChevronRight,
   Flame,
   MessageCircle,
-  Gem
+  Gem,
+  Ruler,
+  PlayCircle,
+  FileText,
+  Layers,
+  ShieldCheck,
+  Calendar,
+  Check
 } from 'lucide-react';
+import { MeasurementGuideModal } from './MeasurementGuideModal';
+import { ReturnPolicyModal } from './ReturnPolicyModal';
 import { 
   imgWedding, 
   imgMeles, 
@@ -53,6 +62,11 @@ export const HomePage: React.FC<HomePageProps> = ({
   const t = getTranslation(language);
   const isAm = language === 'am';
   const isTi = language === 'ti';
+
+  // Modal States
+  const [isMeasurementModalOpen, setIsMeasurementModalOpen] = useState(false);
+  const [isReturnPolicyModalOpen, setIsReturnPolicyModalOpen] = useState(false);
+  const [homeMeasurementGender, setHomeMeasurementGender] = useState<'women' | 'men'>('women');
 
   // State for Best Sellers tab
   const [bestSellerTab, setBestSellerTab] = useState<'all' | 'wedding' | 'couples' | 'chiffon'>('all');
@@ -179,7 +193,7 @@ export const HomePage: React.FC<HomePageProps> = ({
             <div className="lg:col-span-7 space-y-5">
               <div className="inline-flex items-center gap-2 px-3.5 py-1 bg-white border border-[#EAD8C0] text-[#8B0000] text-xs font-bold rounded-full shadow-2xs">
                 <Sparkles className="w-3.5 h-3.5 text-[#C5A059]" />
-                <span>{isTi ? 'ሓዱሽ ስብስብ 2025 • ሽሮሜዳ' : isAm ? 'አዲስ ስብስብ 2025 • ሽሮሜዳ' : 'NEW 2025 COLLECTION • SHIROMEDA ATELIER'}</span>
+                <span>{isTi ? 'ሓዱሽ ስብስብ 2026 • ሽሮሜዳ' : isAm ? 'ኣዲስ ስብስብ 2026 • ሽሮሜዳ' : 'NEW 2026 COLLECTION • SHIROMEDA ATELIER'}</span>
               </div>
 
               <h1 className="text-3xl sm:text-4xl lg:text-5xl font-serif font-bold text-[#8B0000] tracking-tight leading-[1.15]">
@@ -531,13 +545,13 @@ export const HomePage: React.FC<HomePageProps> = ({
               <div className="flex flex-wrap items-center gap-3 pt-2">
                 <button
                   onClick={() => onNavigateToProducts('events', '#የሰርግ')}
-                  className="px-6 py-3 bg-[#C5A059] hover:bg-[#b08b43] text-[#2D241E] text-xs sm:text-sm font-bold rounded-xl shadow-xs transition-colors"
+                  className="px-6 py-3 bg-[#C5A059] hover:bg-[#b08b43] text-[#2D241E] text-xs sm:text-sm font-bold rounded-xl shadow-xs transition-colors cursor-pointer"
                 >
                   {isTi ? 'ናይ መርዓ ስብስብ ርአ' : isAm ? 'የሰርግ ስብስቦችን ይመልከቱ' : 'Shop Wedding Attires'}
                 </button>
                 <button
                   onClick={onOpenCustomOrder}
-                  className="px-6 py-3 bg-white/10 hover:bg-white/20 text-white border border-white/30 text-xs sm:text-sm font-bold rounded-xl transition-colors"
+                  className="px-6 py-3 bg-white/10 hover:bg-white/20 text-white border border-white/30 text-xs sm:text-sm font-bold rounded-xl transition-colors cursor-pointer"
                 >
                   {isTi ? 'ናይ ሚዜታት ዓቐን ስደዱ' : isAm ? 'የሚዜዎች ልክ ያስገቡ' : 'Submit Group Measurements'}
                 </button>
@@ -569,6 +583,227 @@ export const HomePage: React.FC<HomePageProps> = ({
         </div>
       </section>
 
+      {/* 4.5. ELEGANT HOME MEASUREMENT & HERITAGE INSIGHTS SECTION */}
+      <section className="py-12 sm:py-16 bg-[#FDFCF8] border-t border-[#EAD8C0]">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          
+          <div className="text-center max-w-2xl mx-auto mb-10">
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-[#F9F4EC] border border-[#EAD8C0] rounded-full text-xs font-bold text-[#8B0000] mb-2 shadow-2xs">
+              <Ruler className="w-3.5 h-3.5 text-[#C5A059]" />
+              <span>{isTi ? 'ናይ ልክዒ ኣወሳስዳ መምርሒ' : isAm ? 'የልኬት አወሳሰድ መመሪያ (በፎቶ እና ቪድዮ)' : 'Made-to-Measure Guide (Photo & Video)'}</span>
+            </div>
+            <h2 className="text-2xl sm:text-3xl font-serif font-bold text-[#2D241E]">
+              {isTi ? 'ብልክዕኩም ዝስራሕ ባህላዊ ክዳውንቲ' : isAm ? 'በልክዎ የሚሰፋ እውነተኛ የሓበሻ አልባሳት' : 'Precision Custom Fit by Shiromeda Tailors'}
+            </h2>
+            <p className="text-xs sm:text-sm text-[#2D241E]/75 mt-1">
+              {isTi 
+                ? 'ኣብ ገዛኹም ኮይንኩም ብቐሊሉ ንክትዕቀኑ ዝሕግዝ ናይ ፎቶን ቪድዮን መምርሒ፤ ንጹር ዋጋን ቀብድን።' 
+                : isAm 
+                ? 'በቤትዎ ሆነው በቀላሉ የሚለኩበት የፎቶና ቪድዮ መመሪያ፤ ግልጽ የዋጋ፣ የቀብድ እና የቀጠሮ ቀን ስርዓት።' 
+                : 'Follow our clear photo and video guides at home with transparent pricing, deposit terms, and guaranteed turnaround.'}
+            </p>
+          </div>
+
+          {/* Sizing Tabs and Pricing Grid */}
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start mb-10">
+            
+            {/* Left: Measurement Fields Card with Gender Switch */}
+            <div className="lg:col-span-7 bg-white p-6 sm:p-8 rounded-3xl border border-[#EAD8C0] shadow-xs space-y-6">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-[#EAD8C0]">
+                <div>
+                  <h3 className="font-serif font-bold text-base text-[#2D241E]">
+                    {homeMeasurementGender === 'women' ? 'የሴቶች ልኬት አሰጣጥ (Women\'s Sizing)' : 'የወንድ ልኬት አሰጣጥ (Men\'s Sizing)'}
+                  </h3>
+                  <p className="text-xs text-[#2D241E]/60">በሜትር ወይም በሴንቲሜትር የሚወሰዱ ዋና ዋና ልኬቶች</p>
+                </div>
+
+                <div className="inline-flex rounded-xl bg-[#F9F4EC] p-1 border border-[#EAD8C0] text-xs self-start sm:self-auto">
+                  <button
+                    onClick={() => setHomeMeasurementGender('women')}
+                    className={`px-3 py-1.5 rounded-lg font-bold transition-all cursor-pointer ${
+                      homeMeasurementGender === 'women' ? 'bg-[#8B0000] text-white shadow-2xs' : 'text-[#2D241E] hover:text-[#8B0000]'
+                    }`}
+                  >
+                    የሴቶች
+                  </button>
+                  <button
+                    onClick={() => setHomeMeasurementGender('men')}
+                    className={`px-3 py-1.5 rounded-lg font-bold transition-all cursor-pointer ${
+                      homeMeasurementGender === 'men' ? 'bg-[#8B0000] text-white shadow-2xs' : 'text-[#2D241E] hover:text-[#8B0000]'
+                    }`}
+                  >
+                    የወንዶች
+                  </button>
+                </div>
+              </div>
+
+              {homeMeasurementGender === 'women' ? (
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                  <div className="p-3 rounded-xl bg-[#F9F4EC] border border-[#EAD8C0]/80">
+                    <span className="text-[11px] font-bold text-[#8B0000] block">1. ሠደር (Seder)</span>
+                    <span className="text-xs text-[#2D241E]/75">ከጡት ስር የሚወሰድ ልክ</span>
+                  </div>
+                  <div className="p-3 rounded-xl bg-[#F9F4EC] border border-[#EAD8C0]/80">
+                    <span className="text-[11px] font-bold text-[#8B0000] block">2. ቁመት (Length)</span>
+                    <span className="text-xs text-[#2D241E]/75">ከትከሻ እስከ መሬት</span>
+                  </div>
+                  <div className="p-3 rounded-xl bg-[#F9F4EC] border border-[#EAD8C0]/80">
+                    <span className="text-[11px] font-bold text-[#8B0000] block">3. ጡት ዙርያ (Bust)</span>
+                    <span className="text-xs text-[#2D241E]/75">በከፍተኛው የጡት ዙሪያ</span>
+                  </div>
+                  <div className="p-3 rounded-xl bg-[#F9F4EC] border border-[#EAD8C0]/80">
+                    <span className="text-[11px] font-bold text-[#8B0000] block">4. ወገብ ዙርያ (Waist)</span>
+                    <span className="text-xs text-[#2D241E]/75">በተፈጥሯዊው ወገብ ዙሪያ</span>
+                  </div>
+                  <div className="p-3 rounded-xl bg-[#F9F4EC] border border-[#EAD8C0]/80">
+                    <span className="text-[11px] font-bold text-[#8B0000] block">5. ትከሻ (Shoulder)</span>
+                    <span className="text-xs text-[#2D241E]/75">ከትከሻ አጥንት እስከ ትከሻ</span>
+                  </div>
+                  <div className="p-3 rounded-xl bg-[#F9F4EC] border border-[#EAD8C0]/80">
+                    <span className="text-[11px] font-bold text-[#8B0000] block">6. እጅጌ (Sleeve)</span>
+                    <span className="text-xs text-[#2D241E]/75">ከትከሻ እስከ የእጅ አንጓ</span>
+                  </div>
+                </div>
+              ) : (
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                  <div className="p-3 rounded-xl bg-[#F9F4EC] border border-[#EAD8C0]/80">
+                    <span className="text-[11px] font-bold text-[#8B0000] block">1. ሸሚዝ ቁመት</span>
+                    <span className="text-xs text-[#2D241E]/75">ከትከሻ እስከ የሚፈለገው ርዝመት</span>
+                  </div>
+                  <div className="p-3 rounded-xl bg-[#F9F4EC] border border-[#EAD8C0]/80">
+                    <span className="text-[11px] font-bold text-[#8B0000] block">2. ደረት ዙርያ (Chest)</span>
+                    <span className="text-xs text-[#2D241E]/75">በደረቱ ሰፊ ቦታ ዙሪያ</span>
+                  </div>
+                  <div className="p-3 rounded-xl bg-[#F9F4EC] border border-[#EAD8C0]/80">
+                    <span className="text-[11px] font-bold text-[#8B0000] block">3. ሆድ ዙርያ (Belly)</span>
+                    <span className="text-xs text-[#2D241E]/75">በሆዱ ሰፊ ቦታ ዙሪያ</span>
+                  </div>
+                  <div className="p-3 rounded-xl bg-[#F9F4EC] border border-[#EAD8C0]/80">
+                    <span className="text-[11px] font-bold text-[#8B0000] block">4. ትከሻ (Shoulder)</span>
+                    <span className="text-xs text-[#2D241E]/75">ከግራ ወደ ቀኝ ትከሻ አጥንት</span>
+                  </div>
+                  <div className="p-3 rounded-xl bg-[#F9F4EC] border border-[#EAD8C0]/80">
+                    <span className="text-[11px] font-bold text-[#8B0000] block">5. እጅ (Arm Sleeve)</span>
+                    <span className="text-xs text-[#2D241E]/75">ከትከሻ ጫፍ እስከ አንጓ</span>
+                  </div>
+                  <div className="p-3 rounded-xl bg-[#F9F4EC] border border-[#EAD8C0]/80">
+                    <span className="text-[11px] font-bold text-[#8B0000] block">6. ሱሪ ወገብና ቁመት</span>
+                    <span className="text-xs text-[#2D241E]/75">የቀበቶ ቦታና የሱሪ ርዝመት</span>
+                  </div>
+                </div>
+              )}
+
+              <div className="flex flex-wrap items-center gap-3 pt-2">
+                <button
+                  onClick={() => setIsMeasurementModalOpen(true)}
+                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#8B0000] text-white text-xs font-bold shadow-xs hover:bg-[#6e0000] transition-colors cursor-pointer"
+                >
+                  <PlayCircle className="w-4 h-4 text-[#C5A059]" />
+                  <span>የቪድዮ እና የፎቶ ማሳያ ክፈት (Open Guide)</span>
+                </button>
+                <button
+                  onClick={onOpenCustomOrder}
+                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#F9F4EC] text-[#8B0000] border border-[#EAD8C0] text-xs font-bold hover:border-[#8B0000] transition-colors cursor-pointer"
+                >
+                  <Scissors className="w-4 h-4" />
+                  <span>ትዕዛዝ በልክዎ ይጀምሩ</span>
+                </button>
+              </div>
+            </div>
+
+            {/* Right: Pricing, Deposit & Delivery Discipline */}
+            <div className="lg:col-span-5 bg-linear-to-br from-[#F9F4EC] to-white p-6 sm:p-8 rounded-3xl border border-[#EAD8C0] shadow-xs space-y-4">
+              <div className="flex items-center gap-2 pb-2 border-b border-[#EAD8C0]">
+                <ShieldCheck className="w-5 h-5 text-[#2E4739]" />
+                <h3 className="font-serif font-bold text-base text-[#2D241E]">
+                  የዋጋ፣ የቀብድ እና የቀጠሮ ግልጽነት
+                </h3>
+              </div>
+
+              <div className="space-y-3 text-xs">
+                <div className="p-3 bg-white rounded-xl border border-[#EAD8C0] flex items-center justify-between">
+                  <span className="font-bold text-[#2D241E]">የኣንዱ ዋጋ (Single Item Price)</span>
+                  <span className="text-[#8B0000] font-black">በእያንዳንዱ ልብስ ላይ የተለጠፈው ግልጽ ዋጋ</span>
+                </div>
+
+                <div className="p-3 bg-white rounded-xl border border-[#EAD8C0] flex items-center justify-between">
+                  <span className="font-bold text-[#2D241E]">ጠቅላላ ዋጋ (Total Price)</span>
+                  <span className="text-[#2E4739] font-black">የልብሱ፣ የነጠላውና የሚዜዎች ጥቅል</span>
+                </div>
+
+                <div className="p-3 bg-white rounded-xl border border-[#EAD8C0] flex items-center justify-between">
+                  <span className="font-bold text-[#8B0000]">ቀብድ (50% Deposit)</span>
+                  <span className="text-[#8B0000] font-black">ስራ ከመጀመሩ በፊት የሚከፈል 50%</span>
+                </div>
+
+                <div className="p-3 bg-white rounded-xl border border-[#EAD8C0] flex items-center justify-between">
+                  <span className="font-bold text-[#2D241E]">የቀጠሮ ቀን (Appointment Date)</span>
+                  <span className="text-[#2D241E]/80 font-bold">በስምምነቱ ቀን በጥራት የሚረከቡበት</span>
+                </div>
+              </div>
+
+              <p className="text-[11px] text-[#2D241E]/70 leading-relaxed pt-2">
+                * ከአዲስ አበባ ውጭም ሆነ በውጭ ሀገር (ዲያስፖራ) ለሚኖሩ ደንበኞች በ DHL እና በፖስታ ቤት በታማኝነት እንልካለን።
+              </p>
+
+              <button
+                onClick={() => setIsReturnPolicyModalOpen(true)}
+                className="w-full py-2.5 px-4 rounded-xl border border-[#EAD8C0] hover:border-[#8B0000] bg-white text-xs font-bold text-[#8B0000] flex items-center justify-center gap-2 cursor-pointer transition-colors"
+              >
+                <FileText className="w-4 h-4" />
+                <span>የመመለሻ፣ የትዕዛዝ እና የደንበኛ መብት ደንብ ይመልከቱ</span>
+              </button>
+            </div>
+
+          </div>
+
+          {/* Quick Heritage & Fabric Distinction Banner (3 Clean Cards) */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="p-4 rounded-2xl bg-[#F9F4EC] border border-[#EAD8C0] flex items-start gap-3">
+              <div className="w-8 h-8 rounded-lg bg-[#8B0000]/10 text-[#8B0000] flex items-center justify-center shrink-0 mt-0.5">
+                <Layers className="w-4 h-4" />
+              </div>
+              <div>
+                <h4 className="font-serif font-bold text-xs text-[#2D241E] mb-1">
+                  Chiffon እና China የተለያዩ ናቸው
+                </h4>
+                <p className="text-[11px] text-[#2D241E]/75 leading-relaxed">
+                  ሺፎን ለስላሳ፣ አየር የሚያሳልፍና ቀላል የሐር ጥራት ሲሆን፤ ቻይና ጨርቅ የተለየ ክብደትና ገጽታ አለው።
+                </p>
+              </div>
+            </div>
+
+            <div className="p-4 rounded-2xl bg-[#F9F4EC] border border-[#EAD8C0] flex items-start gap-3">
+              <div className="w-8 h-8 rounded-lg bg-[#C5A059]/20 text-[#8B0000] flex items-center justify-center shrink-0 mt-0.5">
+                <Sparkles className="w-4 h-4" />
+              </div>
+              <div>
+                <h4 className="font-serif font-bold text-xs text-[#2D241E] mb-1">
+                  የክርስትና እና የቁርባን የተለያዩ ናቸው
+                </h4>
+                <p className="text-[11px] text-[#2D241E]/75 leading-relaxed">
+                  የጥምቀት ልብስ ንጹህ ነጭ መንፈሳዊ ልብስ ሲሆን፤ የቁርባን ለቅዳሴ ስርዓት የተዘጋጀ ወርቃማ ጥበብ ያለው ነው።
+                </p>
+              </div>
+            </div>
+
+            <div className="p-4 rounded-2xl bg-[#F9F4EC] border border-[#EAD8C0] flex items-start gap-3">
+              <div className="w-8 h-8 rounded-lg bg-[#2E4739]/10 text-[#2E4739] flex items-center justify-center shrink-0 mt-0.5">
+                <Gem className="w-4 h-4" />
+              </div>
+              <div>
+                <h4 className="font-serif font-bold text-xs text-[#2D241E] mb-1">
+                  ፈትል እና ማግ ጥበብ
+                </h4>
+                <p className="text-[11px] text-[#2D241E]/75 leading-relaxed">
+                  የሸማኔዎች ጥበብ በፈትል (ቋሚ ክር) እና በማግ (አግድም ክር) ውህደት የሚፈጠር እውነተኛ ጥራት ነው።
+                </p>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </section>
 
       {/* 5. NEW ARRIVALS */}
       <section className="py-12 sm:py-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 border-t border-[#EAD8C0]">
@@ -579,7 +814,7 @@ export const HomePage: React.FC<HomePageProps> = ({
               <span>{t.newArrivalsTitle}</span>
             </div>
             <h2 className="text-2xl sm:text-3xl font-serif font-bold text-[#2D241E]">
-              {isTi ? 'ሓደሽቲ ናይ 2025 ዲዛይናት' : isAm ? 'አዳዲስ የ 2025 ዲዛይኖች' : 'Latest Season New Arrivals'}
+              {isTi ? 'ሓደሽቲ ናይ 2026 ዲዛይናት' : isAm ? 'ኣዲስ ስብስብ 2026 ዲዛይኖች' : 'Latest Season 2026 New Arrivals'}
             </h2>
             <p className="text-xs sm:text-sm text-[#2D241E]/75 mt-1">
               {isTi 
@@ -591,7 +826,7 @@ export const HomePage: React.FC<HomePageProps> = ({
           </div>
           <button
             onClick={() => onNavigateToProducts()}
-            className="inline-flex items-center gap-1.5 text-xs font-bold text-[#8B0000] hover:underline"
+            className="inline-flex items-center gap-1.5 text-xs font-bold text-[#8B0000] hover:underline cursor-pointer"
           >
             <span>{t.viewAllProductsBtn}</span>
             <ChevronRight className="w-4 h-4" />
@@ -688,6 +923,23 @@ export const HomePage: React.FC<HomePageProps> = ({
           </button>
         </div>
       </section>
+
+      {/* Interactive Modals */}
+      {isMeasurementModalOpen && (
+        <MeasurementGuideModal
+          isOpen={isMeasurementModalOpen}
+          onClose={() => setIsMeasurementModalOpen(false)}
+          language={language}
+        />
+      )}
+
+      {isReturnPolicyModalOpen && (
+        <ReturnPolicyModal
+          isOpen={isReturnPolicyModalOpen}
+          onClose={() => setIsReturnPolicyModalOpen(false)}
+          language={language}
+        />
+      )}
 
     </div>
   );

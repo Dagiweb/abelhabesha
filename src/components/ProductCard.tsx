@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Product, Language } from '../types';
 import { getCategoryDisplay } from '../data/categories';
 import { getTranslation, getProductName, getProductFabric } from '../data/translations';
@@ -9,7 +9,8 @@ import {
   Sparkles, 
   Clock, 
   Check, 
-  Scissors
+  Scissors,
+  Layers
 } from 'lucide-react';
 
 interface ProductCardProps {
@@ -36,6 +37,36 @@ export const ProductCard: React.FC<ProductCardProps> = ({
   const t = getTranslation(language);
   const productName = getProductName(product, language);
   const productFabric = getProductFabric(product, language);
+
+  // All images for shuffling on hover
+  const allImages = useMemo(() => {
+    const list = [product.image];
+    if (product.secondaryImages && Array.isArray(product.secondaryImages)) {
+      for (const img of product.secondaryImages) {
+        if (img && typeof img === 'string' && img.trim() && !list.includes(img)) {
+          list.push(img);
+        }
+      }
+    }
+    return list;
+  }, [product.image, product.secondaryImages]);
+
+  const [activeImageIndex, setActiveImageIndex] = useState(0);
+  const [isHovered, setIsHovered] = useState(false);
+
+  // Shuffle / cycle images on hover
+  useEffect(() => {
+    if (!isHovered || allImages.length <= 1) {
+      setActiveImageIndex(0);
+      return;
+    }
+
+    const interval = setInterval(() => {
+      setActiveImageIndex((prev) => (prev + 1) % allImages.length);
+    }, 1200);
+
+    return () => clearInterval(interval);
+  }, [isHovered, allImages.length]);
 
   const formatPrice = (etb: number) => {
     if (currency === 'USD') {
@@ -65,16 +96,21 @@ export const ProductCard: React.FC<ProductCardProps> = ({
   return (
     <div 
       onClick={() => onOpenDetails(product)}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => {
+        setIsHovered(false);
+        setActiveImageIndex(0);
+      }}
       className="group flex flex-col bg-white rounded-2xl sm:rounded-3xl border border-[#EAD8C0] overflow-hidden hover:shadow-xl transition-all duration-300 hover:border-[#8B0000]/40 shadow-xs cursor-pointer"
     >
       {/* Image Container */}
       <div className="relative aspect-3/4 overflow-hidden bg-[#F9F4EC]">
         <img
-          src={product.image}
+          src={allImages[activeImageIndex] || product.image}
           alt={productName}
           loading="lazy"
           referrerPolicy="no-referrer"
-          className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500"
+          className="w-full h-full object-cover object-center group-hover:scale-105 transition-all duration-500"
         />
 
         {/* Top Badges */}
@@ -83,13 +119,37 @@ export const ProductCard: React.FC<ProductCardProps> = ({
             {product.code}
           </span>
 
-          {product.bestSeller && (
-            <span className="px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full bg-[#8B0000] text-white text-[10px] sm:text-[11px] font-bold shadow-xs flex items-center gap-1 pointer-events-auto">
-              <Sparkles className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-[#C5A059]" />
-              <span>{t.bestSeller}</span>
-            </span>
-          )}
+          <div className="flex items-center gap-1.5 pointer-events-auto">
+            {allImages.length > 1 && (
+              <span className="px-2 py-0.5 rounded-full bg-black/60 backdrop-blur-md text-white text-[9px] font-bold flex items-center gap-1">
+                <Layers className="w-2.5 h-2.5 text-[#C5A059]" />
+                <span>{activeImageIndex + 1}/{allImages.length}</span>
+              </span>
+            )}
+            {product.bestSeller && (
+              <span className="px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full bg-[#8B0000] text-white text-[10px] sm:text-[11px] font-bold shadow-xs flex items-center gap-1">
+                <Sparkles className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-[#C5A059]" />
+                <span>{t.bestSeller}</span>
+              </span>
+            )}
+          </div>
         </div>
+
+        {/* Shuffle Progress Dots on Hover if multiple images */}
+        {allImages.length > 1 && (
+          <div className="absolute bottom-2 inset-x-0 flex items-center justify-center gap-1 pointer-events-none z-10">
+            {allImages.map((_, idx) => (
+              <div 
+                key={idx}
+                className={`h-1.5 rounded-full transition-all duration-300 ${
+                  activeImageIndex === idx 
+                    ? 'w-4 bg-[#8B0000] shadow-xs' 
+                    : 'w-1.5 bg-white/75 shadow-2xs'
+                }`}
+              />
+            ))}
+          </div>
+        )}
 
         {/* Tailoring Turnaround indicator */}
         <div className="absolute bottom-2.5 left-2.5 sm:bottom-3 sm:left-3 pointer-events-none">

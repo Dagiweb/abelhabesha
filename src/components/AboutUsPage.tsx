@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Language } from '../types';
 import { STORE_INFO } from '../data/categories';
 import { 
@@ -15,9 +15,17 @@ import {
   Award,
   CheckCircle2,
   Tag,
-  PhoneCall
+  PhoneCall,
+  FileText,
+  PlayCircle,
+  HelpCircle,
+  Layers,
+  Sparkle
 } from 'lucide-react';
 import { HowToOrderSection } from './HowToOrderSection';
+import { ReturnPolicyModal } from './ReturnPolicyModal';
+import { MeasurementGuideModal } from './MeasurementGuideModal';
+import { AbelHabeshaLogo } from './AbelHabeshaLogo';
 import {
   imgWedding,
   imgMeles,
@@ -42,6 +50,8 @@ export const AboutUsPage: React.FC<AboutUsPageProps> = ({
 }) => {
   const isAm = language === 'am';
   const isTi = language === 'ti';
+  const [isReturnModalOpen, setIsReturnModalOpen] = useState(false);
+  const [isGuideModalOpen, setIsGuideModalOpen] = useState(false);
 
   const storyContent = {
     badge: isTi ? '✨ ብዛዕባ ኣቤል ሓበሻ' : isAm ? '✨ ስለ አቤል ሓበሻ' : '✨ Heritage & Craftsmanship',
@@ -137,10 +147,11 @@ export const AboutUsPage: React.FC<AboutUsPageProps> = ({
       {/* Top Breadcrumb & Hero */}
       <div className="bg-linear-to-b from-[#F9F4EC] to-[#FDFCF8] border-b border-[#EAD8C0]/80">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-16">
-          <div className="max-w-3xl">
-            <div className="inline-flex items-center gap-2 px-3 py-1 bg-white border border-[#EAD8C0] text-[#8B0000] text-xs font-bold rounded-full mb-4 shadow-2xs">
-              <span>{storyContent.badge}</span>
-            </div>
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
+            <div className="lg:col-span-8 max-w-3xl">
+              <div className="inline-flex items-center gap-2 px-3 py-1 bg-white border border-[#EAD8C0] text-[#8B0000] text-xs font-bold rounded-full mb-4 shadow-2xs">
+                <span>{storyContent.badge}</span>
+              </div>
             <h1 className="text-3xl sm:text-4xl lg:text-5xl font-serif font-bold text-[#8B0000] tracking-tight leading-tight mb-4">
               {storyContent.headline}
             </h1>
@@ -218,8 +229,25 @@ export const AboutUsPage: React.FC<AboutUsPageProps> = ({
               </div>
             </div>
           </div>
+
+          {/* Official Brand Emblem Showcase */}
+          <div className="lg:col-span-4 flex justify-center">
+            <div className="w-full max-w-sm p-6 sm:p-8 bg-white border-2 border-[#EAD8C0] rounded-3xl shadow-sm text-center flex flex-col items-center justify-center relative overflow-hidden">
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-[#F9F4EC] border border-[#EAD8C0] rounded-full text-[11px] font-bold text-[#8B0000] mb-4">
+                <span>{isTi ? 'ወግዓዊ ምልክት' : isAm ? 'ኦፊሴላዊ አርማ' : 'Official Brand Emblem'}</span>
+              </div>
+
+              <AbelHabeshaLogo layout="stacked" variant="dual" size="xl" showPhone={true} />
+
+              <div className="w-full mt-4 pt-4 border-t border-[#EAD8C0]/80 text-xs text-[#2D241E]/75 space-y-1">
+                <p className="font-semibold text-[#8B0000]">{isTi || isAm ? STORE_INFO.addressAm : STORE_INFO.addressEn}</p>
+                <p className="font-mono font-bold text-[#2D241E]">{STORE_INFO.phone}</p>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
+    </div>
 
       {/* Metrics / Milestones Ribbon */}
       <div className="border-b border-[#EAD8C0] bg-white">
@@ -394,8 +422,101 @@ export const AboutUsPage: React.FC<AboutUsPageProps> = ({
         </div>
       </div>
 
-      {/* Complete How To Order & Custom Sizing Process (Moved from Homepage) */}
+      {/* Complete How To Order & Custom Sizing Process */}
       <HowToOrderSection language={language} />
+
+      {/* FABRICS & HERITAGE INSIGHTS SECTION */}
+      <div className="bg-[#F9F4EC] border-y border-[#EAD8C0] py-14 sm:py-20">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center max-w-2xl mx-auto mb-10">
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-white border border-[#EAD8C0] rounded-full text-xs font-bold text-[#8B0000] mb-2">
+              <Sparkles className="w-3.5 h-3.5 text-[#C5A059]" />
+              <span>የእደ-ጥበብና የጨርቆች ልዩነት መመሪያ</span>
+            </div>
+            <h2 className="text-2xl sm:text-3xl font-serif font-bold text-[#2D241E]">
+              ስለ ባህላዊ ጨርቆችና አልባሳት ማወቅ ያለብዎ
+            </h2>
+            <p className="text-xs sm:text-sm text-[#2D241E]/75 mt-1">
+              ትክክለኛውን ጨርቅና ዲዛይን እንዲመርጡ የሚያግዝ ሙያዊ መረጃ
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {/* Card 1: Chiffon vs China */}
+            <div className="bg-white p-6 rounded-2xl border border-[#EAD8C0] shadow-xs flex flex-col">
+              <div className="w-10 h-10 rounded-xl bg-[#8B0000]/10 text-[#8B0000] flex items-center justify-center mb-3">
+                <Layers className="w-5 h-5" />
+              </div>
+              <h3 className="font-serif font-bold text-base text-[#2D241E] mb-2 flex items-center justify-between">
+                <span>Chiffon እና China ልዩነት</span>
+                <span className="text-[11px] font-sans px-2 py-0.5 rounded-full bg-[#F9F4EC] text-[#8B0000] font-bold">የተለያዩ ናቸው</span>
+              </h3>
+              <p className="text-xs text-[#2D241E]/80 leading-relaxed mb-3 flex-1">
+                <strong>ሺፎን (Chiffon)፦</strong> ለስላሳ፣ ቀለል ያለ፣ አየር የሚያሳልፍ እና በግርማ ሞገስ የሚወዛወዝ የሐር/ጥጥ ቅልቅል ሲሆን ለዘመናዊ ክብረ-በዓላት ምቹ ነው።<br /><br />
+                <strong>ቻይና (China Fabric)፦</strong> ይበልጥ ጥቅጥቅ ያለና የተለየ ክብደት ያለው ሲሆን ከሺፎን የተለየ ባሕሪ አለው። በአቤል ሓበሻ እያንዳንዱን ጨርቅ በጥራት ለይተን እናቀርባለን።
+              </p>
+              <div className="pt-3 border-t border-[#F2E8DA] text-[11px] text-[#8B0000] font-bold">
+                ✓ 100% ግልጽ የጨርቅ አይነት ማብራሪያ
+              </div>
+            </div>
+
+            {/* Card 2: Baptism vs Holy Communion */}
+            <div className="bg-white p-6 rounded-2xl border border-[#EAD8C0] shadow-xs flex flex-col">
+              <div className="w-10 h-10 rounded-xl bg-[#C5A059]/20 text-[#8B0000] flex items-center justify-center mb-3">
+                <Sparkle className="w-5 h-5" />
+              </div>
+              <h3 className="font-serif font-bold text-base text-[#2D241E] mb-2 flex items-center justify-between">
+                <span>የክርስትና እና የቁርባን አልባሳት</span>
+                <span className="text-[11px] font-sans px-2 py-0.5 rounded-full bg-[#F9F4EC] text-[#8B0000] font-bold">የተለያዩ ናቸው</span>
+              </h3>
+              <p className="text-xs text-[#2D241E]/80 leading-relaxed mb-3 flex-1">
+                <strong>የክርስትና ልብስ፦</strong> ህፃናትም ሆኑ አዋቂዎች ሲጠመቁ የሚለበስ፣ ንጽህናንና መንፈሳዊ አዲስ ህይወትን የሚያመላክት፣ ጥልፉም ረጋ ያለ ነጭ ባህላዊ ልብስ ነው።<br /><br />
+                <strong>የቁርባን ልብስ፦</strong> ለቅዱስ ቁርባን ስርዓት የሚለበስ፣ የራሱ የሆነ ክቡርና ወርቃማ ጥበብ ያለው፣ የተሟላ ነጠላ ያለው ልዩ መንፈሳዊ አልባሳት ነው።
+              </p>
+              <div className="pt-3 border-t border-[#F2E8DA] text-[11px] text-[#2E4739] font-bold">
+                ✓ ለስርዓቱ የተስማማ ትክክለኛ ዲዛይን
+              </div>
+            </div>
+
+            {/* Card 3: Fetel & Mag */}
+            <div className="bg-white p-6 rounded-2xl border border-[#EAD8C0] shadow-xs flex flex-col">
+              <div className="w-10 h-10 rounded-xl bg-[#2E4739]/10 text-[#2E4739] flex items-center justify-center mb-3">
+                <Gem className="w-5 h-5" />
+              </div>
+              <h3 className="font-serif font-bold text-base text-[#2D241E] mb-2 flex items-center justify-between">
+                <span>ፈትል እና ማግ (The Art of Fetel)</span>
+                <span className="text-[11px] font-sans px-2 py-0.5 rounded-full bg-[#F9F4EC] text-[#2E4739] font-bold">100% እጅ-ሰራሽ</span>
+              </h3>
+              <p className="text-xs text-[#2D241E]/80 leading-relaxed mb-3 flex-1">
+                በእውነተኛ የኢትዮጵያ ሸማኔዎች እጅ የሚሰራው ጥበብ በሁለት ዋና የጥጥ ክሮች ይመሰረታል፦<br /><br />
+                <strong>ፈትል (Warp)፦</strong> በሸማው ርዝመት የተዘረጋው ቋሚ የጥጥ ክር ሲሆን፤<br />
+                <strong>ማግ (Weft)፦</strong> በመወርወሪያው (Shuttle) የሚመላለሰው አግድም ክር ነው። ሁለቱ ሲጣመሩ የላቀ ጥንካሬና ምቾት ያለው ክዳን ይወለዳል።
+              </p>
+              <div className="pt-3 border-t border-[#F2E8DA] text-[11px] text-[#8B0000] font-bold">
+                ✓ ጥራት ያለው የአክሱም ፈትልና ማግ
+              </div>
+            </div>
+          </div>
+
+          {/* Quick Action Trigger Buttons */}
+          <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
+            <button
+              onClick={() => setIsGuideModalOpen(true)}
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-white border border-[#EAD8C0] hover:border-[#8B0000] text-xs font-bold text-[#8B0000] shadow-2xs transition-all cursor-pointer"
+            >
+              <PlayCircle className="w-4 h-4 text-[#C5A059]" />
+              <span>የልኬት አወሳሰድ በቪድዮ እና ፎቶ ይመልከቱ</span>
+            </button>
+            <button
+              onClick={() => setIsReturnModalOpen(true)}
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-white border border-[#EAD8C0] hover:border-[#8B0000] text-xs font-bold text-[#2D241E] shadow-2xs transition-all cursor-pointer"
+            >
+              <FileText className="w-4 h-4 text-[#8B0000]" />
+              <span>የመመለሻ፣ የትዕዛዝ እና የደንበኛ መብት ደንብ (Return Policy)</span>
+            </button>
+          </div>
+        </div>
+      </div>
 
       {/* Gallery Showcase */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14 sm:py-20">
@@ -467,6 +588,24 @@ export const AboutUsPage: React.FC<AboutUsPageProps> = ({
           </div>
         </div>
       </div>
+
+      {/* Modals */}
+      {isReturnModalOpen && (
+        <ReturnPolicyModal
+          isOpen={isReturnModalOpen}
+          onClose={() => setIsReturnModalOpen(false)}
+          language={language}
+        />
+      )}
+
+      {isGuideModalOpen && (
+        <MeasurementGuideModal
+          isOpen={isGuideModalOpen}
+          onClose={() => setIsGuideModalOpen(false)}
+          language={language}
+        />
+      )}
+
     </div>
   );
 };
